@@ -3,13 +3,18 @@ use crate::rust_analyzer::path_to_file_id;
 use crate::trap::TrapId;
 use anyhow::Context;
 use archive::Archiver;
+use itertools::Itertools;
 use log::{info, warn};
+use ra_ap_base_db::{CrateId, SourceDatabase};
+use ra_ap_cfg::CfgAtom;
 use ra_ap_hir::Semantics;
 use ra_ap_ide_db::line_index::{LineCol, LineIndex};
 use ra_ap_ide_db::RootDatabase;
 use ra_ap_project_model::{CargoConfig, ProjectManifest};
-use ra_ap_vfs::Vfs;
+use ra_ap_vfs::{Vfs, VfsPath};
 use rust_analyzer::{ParseResult, RustAnalyzer};
+use std::cmp::Ordering;
+use std::hash::{Hash, Hasher};
 use std::time::Instant;
 use std::{
     collections::HashMap,
@@ -159,6 +164,83 @@ impl<'a> Extractor<'a> {
         trap.commit()?;
         Ok(())
     }
+
+    fn extract_crate_graph(&self, db: &RootDatabase, vfs: &Vfs) {
+        let crate_graph = db.crate_graph();
+
+        // According to the documentation of `CrateGraph`:
+        // Each crate is defined by the `FileId` of its root module, the set of enabled
+        // `cfg` flags and the set of dependencies.
+        let mut crate_id_map = HashMap::<CrateId, (&VfsPath, u64)>::new();
+        for krate_id in crate_graph.crates_in_topological_order() {
+            let krate = &crate_graph[krate_id];
+            let root_module_file = vfs.file_path(krate.root_file_id);
+            let mut hasher = std::hash::DefaultHasher::new();
+            krate
+                .cfg_options
+                .as_ref()
+                .into_iter()
+                .sorted_by(cmp_flag)
+                .for_each(|x| format!("{x}").hash(&mut hasher));
+
+            krate
+                .dependencies
+                .iter()
+                .flat_map(|d| crate_id_map.get(&d.crate_id))
+                .sorted()
+                .for_each(|x| x.hash(&mut hasher));
+            let hash = hasher.finish();
+            crate_id_map.insert(krate_id, (root_module_file, hash));
+        }
+        for krate_id in crate_graph.iter() {
+            let (root_module_file, hash) = crate_id_map.get(&krate_id).unwrap();
+            let path: &Path = root_module_file.as_path().unwrap().as_ref();
+            let path = path.join(format!("{hash:0>16x}"));
+            let mut trap = self.traps.create("crates", path.as_path());
+            if trap.path.exists() {
+                continue;
+            }
+            let krate = &crate_graph[krate_id];
+            let element = generated::Crate {
+                id: trap::TrapId::Key(format!("crate:{root_module_file}:{hash}")),
+                name: krate
+                    .display_name
+                    .as_ref()
+                    .map(|x| x.canonical_name().to_string()),
+                version: krate.version.to_owned(),
+                cfg_options: krate
+                    .cfg_options
+                    .as_ref()
+                    .into_iter()
+                    .map(|x| format!("{x}"))
+                    .collect(),
+                dependencies: krate
+                    .dependencies
+                    .iter()
+                    .flat_map(|x| crate_id_map.get(&x.crate_id))
+                    .map(|(module, hash)| trap.label(format!("crate:{module}:{hash}").into()))
+                    .collect(),
+            };
+            trap.emit(element);
+            trap.commit();
+        }
+    }
+}
+
+fn cmp_flag(a: &&CfgAtom, b: &&CfgAtom) -> Ordering {
+    match (a, b) {
+        (CfgAtom::Flag(a), CfgAtom::Flag(b)) => a.as_str().cmp(b.as_str()),
+        (CfgAtom::Flag(a), CfgAtom::KeyValue { key: b, value: _ }) => {
+            a.as_str().cmp(b.as_str()).then(Ordering::Less)
+        }
+        (CfgAtom::KeyValue { key: a, value: _ }, CfgAtom::Flag(b)) => {
+            a.as_str().cmp(b.as_str()).then(Ordering::Greater)
+        }
+        (CfgAtom::KeyValue { key: a, value: av }, CfgAtom::KeyValue { key: b, value: bv }) => a
+            .as_str()
+            .cmp(b.as_str())
+            .then(av.as_str().cmp(bv.as_str())),
+    }
 }
 
 fn main() -> anyhow::Result<()> {
@@ -204,6 +286,7 @@ fn main() -> anyhow::Result<()> {
     let cargo_config = cfg.to_cargo_config();
     for (manifest, files) in map.values().filter(|(_, files)| !files.is_empty()) {
         if let Some((ref db, ref vfs)) = extractor.load_manifest(manifest, &cargo_config) {
+            extractor.extract_crate_graph(db, vfs);
             let semantics = Semantics::new(db);
             for file in files {
                 match extractor.load_source(file, &semantics, vfs) {
