@@ -12,19 +12,6 @@ private module Impl {
     none()
   }
 
-  private Element getImmediateChildOfCrate(Crate e, int index, string partialPredicateCall) {
-    exists(int b, int bElement, int n |
-      b = 0 and
-      bElement = b + 1 + max(int i | i = -1 or exists(getImmediateChildOfElement(e, i, _)) | i) and
-      n = bElement and
-      (
-        none()
-        or
-        result = getImmediateChildOfElement(e, index - b, partialPredicateCall)
-      )
-    )
-  }
-
   private Element getImmediateChildOfExtractorStep(
     ExtractorStep e, int index, string partialPredicateCall
   ) {
@@ -41,6 +28,21 @@ private module Impl {
   }
 
   private Element getImmediateChildOfLocatable(Locatable e, int index, string partialPredicateCall) {
+    exists(int b, int bElement, int n |
+      b = 0 and
+      bElement = b + 1 + max(int i | i = -1 or exists(getImmediateChildOfElement(e, i, _)) | i) and
+      n = bElement and
+      (
+        none()
+        or
+        result = getImmediateChildOfElement(e, index - b, partialPredicateCall)
+      )
+    )
+  }
+
+  private Element getImmediateChildOfModuleContainer(
+    ModuleContainer e, int index, string partialPredicateCall
+  ) {
     exists(int b, int bElement, int n |
       b = 0 and
       bElement = b + 1 + max(int i | i = -1 or exists(getImmediateChildOfElement(e, i, _)) | i) and
@@ -77,6 +79,36 @@ private module Impl {
         none()
         or
         result = getImmediateChildOfLocatable(e, index - b, partialPredicateCall)
+      )
+    )
+  }
+
+  private Element getImmediateChildOfCrate(Crate e, int index, string partialPredicateCall) {
+    exists(int b, int bModuleContainer, int n |
+      b = 0 and
+      bModuleContainer =
+        b + 1 + max(int i | i = -1 or exists(getImmediateChildOfModuleContainer(e, i, _)) | i) and
+      n = bModuleContainer and
+      (
+        none()
+        or
+        result = getImmediateChildOfModuleContainer(e, index - b, partialPredicateCall)
+      )
+    )
+  }
+
+  private Element getImmediateChildOfCrateModule(
+    CrateModule e, int index, string partialPredicateCall
+  ) {
+    exists(int b, int bModuleContainer, int n |
+      b = 0 and
+      bModuleContainer =
+        b + 1 + max(int i | i = -1 or exists(getImmediateChildOfModuleContainer(e, i, _)) | i) and
+      n = bModuleContainer and
+      (
+        none()
+        or
+        result = getImmediateChildOfModuleContainer(e, index - b, partialPredicateCall)
       )
     )
   }
@@ -4044,9 +4076,11 @@ private module Impl {
     // * none() simplifies generation, as we can append `or ...` without a special case for the first item
     none()
     or
+    result = getImmediateChildOfExtractorStep(e, index, partialAccessor)
+    or
     result = getImmediateChildOfCrate(e, index, partialAccessor)
     or
-    result = getImmediateChildOfExtractorStep(e, index, partialAccessor)
+    result = getImmediateChildOfCrateModule(e, index, partialAccessor)
     or
     result = getImmediateChildOfFormat(e, index, partialAccessor)
     or

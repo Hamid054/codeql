@@ -7,7 +7,7 @@
 private import codeql.rust.elements.internal.generated.Synth
 private import codeql.rust.elements.internal.generated.Raw
 import codeql.rust.elements.Crate
-import codeql.rust.elements.internal.ElementImpl::Impl as ElementImpl
+import codeql.rust.elements.internal.ModuleContainerImpl::Impl as ModuleContainerImpl
 
 /**
  * INTERNAL: This module contains the fully generated definition of `Crate` and should not
@@ -18,7 +18,7 @@ module Generated {
    * INTERNAL: Do not reference the `Generated::Crate` class directly.
    * Use the subclass `Crate`, where the following predicates are available.
    */
-  class Crate extends Synth::TCrate, ElementImpl::Element {
+  class Crate extends Synth::TCrate, ModuleContainerImpl::ModuleContainer {
     override string getAPrimaryQlClass() { result = "Crate" }
 
     /**

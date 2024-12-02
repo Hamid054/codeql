@@ -46,6 +46,7 @@
 /lib/codeql/rust/elements/ConstParam.qll linguist-generated
 /lib/codeql/rust/elements/ContinueExpr.qll linguist-generated
 /lib/codeql/rust/elements/Crate.qll linguist-generated
+/lib/codeql/rust/elements/CrateModule.qll linguist-generated
 /lib/codeql/rust/elements/DynTraitTypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/Element.qll linguist-generated
 /lib/codeql/rust/elements/Enum.qll linguist-generated
@@ -107,6 +108,7 @@
 /lib/codeql/rust/elements/MethodCallExpr.qll linguist-generated
 /lib/codeql/rust/elements/Missing.qll linguist-generated
 /lib/codeql/rust/elements/Module.qll linguist-generated
+/lib/codeql/rust/elements/ModuleContainer.qll linguist-generated
 /lib/codeql/rust/elements/Name.qll linguist-generated
 /lib/codeql/rust/elements/NameRef.qll linguist-generated
 /lib/codeql/rust/elements/NeverTypeRepr.qll linguist-generated
@@ -259,6 +261,8 @@
 /lib/codeql/rust/elements/internal/ContinueExprConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/CrateConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/CrateImpl.qll linguist-generated
+/lib/codeql/rust/elements/internal/CrateModuleConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/CrateModuleImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/DynTraitTypeReprConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/DynTraitTypeReprImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/EnumConstructor.qll linguist-generated
@@ -340,6 +344,7 @@
 /lib/codeql/rust/elements/internal/MissingConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/MissingImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/ModuleConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/ModuleContainerImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/NameConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/NameRefConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/NeverTypeReprConstructor.qll linguist-generated
@@ -512,6 +517,7 @@
 /lib/codeql/rust/elements/internal/generated/ConstParam.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/ContinueExpr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Crate.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/CrateModule.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/DynTraitTypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Element.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Enum.qll linguist-generated
@@ -574,6 +580,7 @@
 /lib/codeql/rust/elements/internal/generated/MethodCallExpr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Missing.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Module.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/ModuleContainer.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Name.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/NameRef.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/NeverTypeRepr.qll linguist-generated
@@ -762,6 +769,7 @@
 /test/extractor-tests/generated/ContinueExpr/ContinueExpr_getAttr.ql linguist-generated
 /test/extractor-tests/generated/ContinueExpr/ContinueExpr_getLifetime.ql linguist-generated
 /test/extractor-tests/generated/Crate/MISSING_SOURCE.txt linguist-generated
+/test/extractor-tests/generated/CrateModule/MISSING_SOURCE.txt linguist-generated
 /test/extractor-tests/generated/DynTraitTypeRepr/DynTraitTypeRepr.ql linguist-generated
 /test/extractor-tests/generated/DynTraitTypeRepr/DynTraitTypeRepr_getTypeBoundList.ql linguist-generated
 /test/extractor-tests/generated/Enum/Enum.ql linguist-generated

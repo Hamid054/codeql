@@ -113,7 +113,16 @@ class ExtractorStep(Element):
     duration_ms: int
 
 
-class Crate(Element):
+class ModuleContainer(Element):
+    pass
+
+
+class CrateModule(ModuleContainer):
+    parent: ModuleContainer
+    name: string
+
+
+class Crate(ModuleContainer):
     name: optional[string]
     version: optional[string]
     cfg_options: list[string]

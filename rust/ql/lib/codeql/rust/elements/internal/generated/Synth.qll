@@ -169,6 +169,10 @@ module Synth {
     /**
      * INTERNAL: Do not use.
      */
+    TCrateModule(Raw::CrateModule id) { constructCrateModule(id) } or
+    /**
+     * INTERNAL: Do not use.
+     */
     TDynTraitTypeRepr(Raw::DynTraitTypeRepr id) { constructDynTraitTypeRepr(id) } or
     /**
      * INTERNAL: Do not use.
@@ -788,6 +792,11 @@ module Synth {
   /**
    * INTERNAL: Do not use.
    */
+  class TModuleContainer = TCrate or TCrateModule;
+
+  /**
+   * INTERNAL: Do not use.
+   */
   class TParamBase = TParam or TSelfParam;
 
   /**
@@ -1070,6 +1079,12 @@ module Synth {
    * Converts a raw element to a synthesized `TCrate`, if possible.
    */
   TCrate convertCrateFromRaw(Raw::Element e) { result = TCrate(e) }
+
+  /**
+   * INTERNAL: Do not use.
+   * Converts a raw element to a synthesized `TCrateModule`, if possible.
+   */
+  TCrateModule convertCrateModuleFromRaw(Raw::Element e) { result = TCrateModule(e) }
 
   /**
    * INTERNAL: Do not use.
@@ -2060,11 +2075,11 @@ module Synth {
    * Converts a raw DB element to a synthesized `TElement`, if possible.
    */
   TElement convertElementFromRaw(Raw::Element e) {
-    result = convertCrateFromRaw(e)
-    or
     result = convertExtractorStepFromRaw(e)
     or
     result = convertLocatableFromRaw(e)
+    or
+    result = convertModuleContainerFromRaw(e)
     or
     result = convertUnextractedFromRaw(e)
   }
@@ -2263,6 +2278,16 @@ module Synth {
     result = convertLoopExprFromRaw(e)
     or
     result = convertWhileExprFromRaw(e)
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   * Converts a raw DB element to a synthesized `TModuleContainer`, if possible.
+   */
+  TModuleContainer convertModuleContainerFromRaw(Raw::Element e) {
+    result = convertCrateFromRaw(e)
+    or
+    result = convertCrateModuleFromRaw(e)
   }
 
   /**
@@ -2650,6 +2675,12 @@ module Synth {
    * Converts a synthesized `TCrate` to a raw DB element, if possible.
    */
   Raw::Element convertCrateToRaw(TCrate e) { e = TCrate(result) }
+
+  /**
+   * INTERNAL: Do not use.
+   * Converts a synthesized `TCrateModule` to a raw DB element, if possible.
+   */
+  Raw::Element convertCrateModuleToRaw(TCrateModule e) { e = TCrateModule(result) }
 
   /**
    * INTERNAL: Do not use.
@@ -3638,11 +3669,11 @@ module Synth {
    * Converts a synthesized `TElement` to a raw DB element, if possible.
    */
   Raw::Element convertElementToRaw(TElement e) {
-    result = convertCrateToRaw(e)
-    or
     result = convertExtractorStepToRaw(e)
     or
     result = convertLocatableToRaw(e)
+    or
+    result = convertModuleContainerToRaw(e)
     or
     result = convertUnextractedToRaw(e)
   }
@@ -3841,6 +3872,16 @@ module Synth {
     result = convertLoopExprToRaw(e)
     or
     result = convertWhileExprToRaw(e)
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   * Converts a synthesized `TModuleContainer` to a raw DB element, if possible.
+   */
+  Raw::Element convertModuleContainerToRaw(TModuleContainer e) {
+    result = convertCrateToRaw(e)
+    or
+    result = convertCrateModuleToRaw(e)
   }
 
   /**

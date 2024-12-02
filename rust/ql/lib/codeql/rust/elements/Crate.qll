@@ -4,6 +4,6 @@
  */
 
 private import internal.CrateImpl
-import codeql.rust.elements.Element
+import codeql.rust.elements.ModuleContainer
 
 final class Crate = Impl::Crate;
