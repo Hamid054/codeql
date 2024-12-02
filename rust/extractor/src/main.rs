@@ -7,7 +7,9 @@ use itertools::Itertools;
 use log::{info, warn};
 use ra_ap_base_db::{CrateId, SourceDatabase};
 use ra_ap_cfg::CfgAtom;
-use ra_ap_hir::Semantics;
+use ra_ap_hir::db::DefDatabase;
+use ra_ap_hir::{DefMap, Semantics};
+use ra_ap_hir_def::LocalModuleId;
 use ra_ap_ide_db::line_index::{LineCol, LineIndex};
 use ra_ap_ide_db::RootDatabase;
 use ra_ap_project_model::{CargoConfig, ProjectManifest};
@@ -20,6 +22,7 @@ use std::{
     collections::HashMap,
     path::{Path, PathBuf},
 };
+use trap::TrapFile;
 
 mod archive;
 mod config;
@@ -221,8 +224,40 @@ impl<'a> Extractor<'a> {
                     .map(|(module, hash)| trap.label(format!("crate:{module}:{hash}").into()))
                     .collect(),
             };
-            trap.emit(element);
+            let parent = trap.emit(element);
+
+            go(
+                db,
+                db.crate_def_map(krate_id).as_ref(),
+                parent.into(),
+                "crate",
+                DefMap::ROOT,
+                &mut trap,
+            );
             trap.commit();
+
+            fn go(
+                db: &dyn DefDatabase,
+                map: &DefMap,
+                parent: trap::Label<generated::ModuleContainer>,
+                name: &str,
+                module: LocalModuleId,
+                trap: &mut TrapFile,
+            ) {
+                let module = &map.modules[module];
+                let label = trap.emit(generated::CrateModule {
+                    id: trap::TrapId::Star,
+                    name: name.to_owned(),
+                    parent,
+                });
+                for (name, child) in module
+                    .children
+                    .iter()
+                    .sorted_by(|a, b| Ord::cmp(&a.0, &b.0))
+                {
+                    go(db, map, label.into(), name.as_str(), *child, trap);
+                }
+            }
         }
     }
 }
