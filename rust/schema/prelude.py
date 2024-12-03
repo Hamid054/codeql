@@ -117,9 +117,15 @@ class ModuleContainer(Element):
     pass
 
 
+class ValueItem(Element):
+    name: string
+    type: "TypeRepr"
+
+
 class CrateModule(ModuleContainer):
     parent: ModuleContainer
     name: string
+    values: list[ValueItem]
 
 
 class Crate(ModuleContainer):

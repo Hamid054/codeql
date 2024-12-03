@@ -159,6 +159,7 @@ import codeql.rust.elements.internal.UseConstructor
 import codeql.rust.elements.internal.UseBoundGenericArgsConstructor
 import codeql.rust.elements.internal.UseTreeConstructor
 import codeql.rust.elements.internal.UseTreeListConstructor
+import codeql.rust.elements.internal.ValueItemConstructor
 import codeql.rust.elements.internal.VariantConstructor
 import codeql.rust.elements.internal.VariantListConstructor
 import codeql.rust.elements.internal.VisibilityConstructor

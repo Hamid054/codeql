@@ -124,6 +124,7 @@ locatable_locations(
 | @locatable
 | @module_container
 | @unextracted
+| @value_item
 ;
 
 extractor_steps(
@@ -146,6 +147,12 @@ extractor_steps(
   @missing
 | @unimplemented
 ;
+
+value_items(
+  unique int id: @value_item,
+  string name: string ref,
+  int type_: @type_repr ref
+);
 
 @ast_node =
   @abi
@@ -249,6 +256,13 @@ crate_modules(
   unique int id: @crate_module,
   int parent: @module_container ref,
   string name: string ref
+);
+
+#keyset[id, index]
+crate_module_values(
+  int id: @crate_module ref,
+  int index: int ref,
+  int value: @value_item ref
 );
 
 missings(

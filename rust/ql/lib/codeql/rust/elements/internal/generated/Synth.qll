@@ -649,6 +649,10 @@ module Synth {
     /**
      * INTERNAL: Do not use.
      */
+    TValueItem(Raw::ValueItem id) { constructValueItem(id) } or
+    /**
+     * INTERNAL: Do not use.
+     */
     TVariant(Raw::Variant id) { constructVariant(id) } or
     /**
      * INTERNAL: Do not use.
@@ -1802,6 +1806,12 @@ module Synth {
 
   /**
    * INTERNAL: Do not use.
+   * Converts a raw element to a synthesized `TValueItem`, if possible.
+   */
+  TValueItem convertValueItemFromRaw(Raw::Element e) { result = TValueItem(e) }
+
+  /**
+   * INTERNAL: Do not use.
    * Converts a raw element to a synthesized `TVariant`, if possible.
    */
   TVariant convertVariantFromRaw(Raw::Element e) { result = TVariant(e) }
@@ -2082,6 +2092,8 @@ module Synth {
     result = convertModuleContainerFromRaw(e)
     or
     result = convertUnextractedFromRaw(e)
+    or
+    result = convertValueItemFromRaw(e)
   }
 
   /**
@@ -3396,6 +3408,12 @@ module Synth {
 
   /**
    * INTERNAL: Do not use.
+   * Converts a synthesized `TValueItem` to a raw DB element, if possible.
+   */
+  Raw::Element convertValueItemToRaw(TValueItem e) { e = TValueItem(result) }
+
+  /**
+   * INTERNAL: Do not use.
    * Converts a synthesized `TVariant` to a raw DB element, if possible.
    */
   Raw::Element convertVariantToRaw(TVariant e) { e = TVariant(result) }
@@ -3676,6 +3694,8 @@ module Synth {
     result = convertModuleContainerToRaw(e)
     or
     result = convertUnextractedToRaw(e)
+    or
+    result = convertValueItemToRaw(e)
   }
 
   /**

@@ -56,6 +56,23 @@ module Raw {
   /**
    * INTERNAL: Do not use.
    */
+  class ValueItem extends @value_item, Element {
+    override string toString() { result = "ValueItem" }
+
+    /**
+     * Gets the name of this value item.
+     */
+    string getName() { value_items(this, result, _) }
+
+    /**
+     * Gets the type of this value item.
+     */
+    TypeRepr getType() { value_items(this, _, result) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
   class AstNode extends @ast_node, Locatable { }
 
   /**
@@ -100,6 +117,11 @@ module Raw {
      * Gets the name of this crate module.
      */
     string getName() { crate_modules(this, _, result) }
+
+    /**
+     * Gets the `index`th value of this crate module (0-based).
+     */
+    ValueItem getValue(int index) { crate_module_values(this, index, result) }
   }
 
   /**

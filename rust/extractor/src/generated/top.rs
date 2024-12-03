@@ -108,6 +108,36 @@ impl From<trap::Label<Unextracted>> for trap::Label<Element> {
 }
 
 #[derive(Debug)]
+pub struct ValueItem {
+    pub id: trap::TrapId<ValueItem>,
+    pub name: String,
+    pub type_: trap::Label<TypeRepr>,
+}
+
+impl trap::TrapEntry for ValueItem {
+    fn extract_id(&mut self) -> trap::TrapId<Self> {
+        std::mem::replace(&mut self.id, trap::TrapId::Star)
+    }
+
+    fn emit(self, id: trap::Label<Self>, out: &mut trap::Writer) {
+        out.add_tuple("value_items", vec![id.into(), self.name.into(), self.type_.into()]);
+    }
+}
+
+impl trap::TrapClass for ValueItem {
+    fn class_name() -> &'static str { "ValueItem" }
+}
+
+impl From<trap::Label<ValueItem>> for trap::Label<Element> {
+    fn from(value: trap::Label<ValueItem>) -> Self {
+        // SAFETY: this is safe because in the dbscheme ValueItem is a subclass of Element
+        unsafe {
+            Self::from_untyped(value.as_untyped())
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct AstNode {
     _unused: ()
 }
@@ -192,6 +222,7 @@ pub struct CrateModule {
     pub id: trap::TrapId<CrateModule>,
     pub parent: trap::Label<ModuleContainer>,
     pub name: String,
+    pub values: Vec<trap::Label<ValueItem>>,
 }
 
 impl trap::TrapEntry for CrateModule {
@@ -201,6 +232,9 @@ impl trap::TrapEntry for CrateModule {
 
     fn emit(self, id: trap::Label<Self>, out: &mut trap::Writer) {
         out.add_tuple("crate_modules", vec![id.into(), self.parent.into(), self.name.into()]);
+        for (i, v) in self.values.into_iter().enumerate() {
+            out.add_tuple("crate_module_values", vec![id.into(), i.into(), v.into()]);
+        }
     }
 }
 

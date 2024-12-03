@@ -70,6 +70,19 @@ private module Impl {
     )
   }
 
+  private Element getImmediateChildOfValueItem(ValueItem e, int index, string partialPredicateCall) {
+    exists(int b, int bElement, int n |
+      b = 0 and
+      bElement = b + 1 + max(int i | i = -1 or exists(getImmediateChildOfElement(e, i, _)) | i) and
+      n = bElement and
+      (
+        none()
+        or
+        result = getImmediateChildOfElement(e, index - b, partialPredicateCall)
+      )
+    )
+  }
+
   private Element getImmediateChildOfAstNode(AstNode e, int index, string partialPredicateCall) {
     exists(int b, int bLocatable, int n |
       b = 0 and
@@ -4077,6 +4090,8 @@ private module Impl {
     none()
     or
     result = getImmediateChildOfExtractorStep(e, index, partialAccessor)
+    or
+    result = getImmediateChildOfValueItem(e, index, partialAccessor)
     or
     result = getImmediateChildOfCrate(e, index, partialAccessor)
     or

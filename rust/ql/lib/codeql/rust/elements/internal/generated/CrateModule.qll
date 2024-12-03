@@ -8,6 +8,7 @@ private import codeql.rust.elements.internal.generated.Synth
 private import codeql.rust.elements.internal.generated.Raw
 import codeql.rust.elements.ModuleContainer
 import codeql.rust.elements.internal.ModuleContainerImpl::Impl as ModuleContainerImpl
+import codeql.rust.elements.ValueItem
 
 /**
  * INTERNAL: This module contains the fully generated definition of `CrateModule` and should not
@@ -35,5 +36,25 @@ module Generated {
      * Gets the name of this crate module.
      */
     string getName() { result = Synth::convertCrateModuleToRaw(this).(Raw::CrateModule).getName() }
+
+    /**
+     * Gets the `index`th value of this crate module (0-based).
+     */
+    ValueItem getValue(int index) {
+      result =
+        Synth::convertValueItemFromRaw(Synth::convertCrateModuleToRaw(this)
+              .(Raw::CrateModule)
+              .getValue(index))
+    }
+
+    /**
+     * Gets any of the values of this crate module.
+     */
+    final ValueItem getAValue() { result = this.getValue(_) }
+
+    /**
+     * Gets the number of values of this crate module.
+     */
+    final int getNumberOfValues() { result = count(int i | exists(this.getValue(i))) }
   }
 }

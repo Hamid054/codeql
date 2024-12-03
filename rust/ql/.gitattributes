@@ -184,6 +184,7 @@
 /lib/codeql/rust/elements/UseBoundGenericArgs.qll linguist-generated
 /lib/codeql/rust/elements/UseTree.qll linguist-generated
 /lib/codeql/rust/elements/UseTreeList.qll linguist-generated
+/lib/codeql/rust/elements/ValueItem.qll linguist-generated
 /lib/codeql/rust/elements/Variant.qll linguist-generated
 /lib/codeql/rust/elements/VariantList.qll linguist-generated
 /lib/codeql/rust/elements/Visibility.qll linguist-generated
@@ -456,6 +457,8 @@
 /lib/codeql/rust/elements/internal/UseTreeImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/UseTreeListConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/UseTreeListImpl.qll linguist-generated
+/lib/codeql/rust/elements/internal/ValueItemConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/ValueItemImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/VariantConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/VariantListConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/VariantListImpl.qll linguist-generated
@@ -661,6 +664,7 @@
 /lib/codeql/rust/elements/internal/generated/UseBoundGenericArgs.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/UseTree.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/UseTreeList.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/ValueItem.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Variant.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/VariantList.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Visibility.qll linguist-generated
@@ -1208,6 +1212,7 @@
 /test/extractor-tests/generated/UseTree/UseTree_getUseTreeList.ql linguist-generated
 /test/extractor-tests/generated/UseTreeList/UseTreeList.ql linguist-generated
 /test/extractor-tests/generated/UseTreeList/UseTreeList_getUseTree.ql linguist-generated
+/test/extractor-tests/generated/ValueItem/MISSING_SOURCE.txt linguist-generated
 /test/extractor-tests/generated/Variant/Variant.ql linguist-generated
 /test/extractor-tests/generated/Variant/Variant_getAttr.ql linguist-generated
 /test/extractor-tests/generated/Variant/Variant_getCrateOrigin.ql linguist-generated
