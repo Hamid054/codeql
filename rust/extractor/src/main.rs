@@ -9,6 +9,7 @@ use ra_ap_base_db::{CrateId, SourceDatabase};
 use ra_ap_cfg::CfgAtom;
 use ra_ap_hir::db::{DefDatabase, HirDatabase};
 use ra_ap_hir::{DefMap, ModPath, ModuleDefId, Semantics, TypeRef, Variant};
+use ra_ap_hir_def::data::adt::VariantData;
 use ra_ap_hir_def::LocalModuleId;
 use ra_ap_ide_db::line_index::{LineCol, LineIndex};
 use ra_ap_ide_db::RootDatabase;
@@ -236,6 +237,30 @@ fn emit_hir_typeref(trap: &mut TrapFile, ty: &TypeRef) -> Option<trap::Label<gen
     }
 }
 
+fn emit_variant_data(
+    trap: &mut TrapFile,
+    variant: &VariantData,
+) -> Option<trap::Label<generated::VariantData>> {
+    match variant {
+        VariantData::Record(field_data) | VariantData::Tuple(field_data) => {
+            let mut types = Vec::new();
+            let mut fields = Vec::new();
+            for field in field_data.values() {
+                if let Some(tp) = emit_hir_typeref(trap, &field.type_ref) {
+                    fields.push(field.name.as_str().to_owned());
+                    types.push(tp);
+                }
+            }
+            Some(trap.emit(generated::VariantData {
+                id: trap::TrapId::Star,
+                types,
+                fields,
+                is_record: matches!(variant, VariantData::Record(_)),
+            }))
+        }
+        VariantData::Unit => None,
+    }
+}
 impl<'a> Extractor<'a> {
     pub fn new(archiver: &'a Archiver, traps: &'a trap::TrapFileProvider) -> Self {
         Self {
@@ -444,6 +469,7 @@ impl<'a> Extractor<'a> {
                 let module = &map.modules[module];
                 let items = &module.scope;
                 let mut values = Vec::new();
+                let mut types = Vec::new();
 
                 for (name, item) in items.entries() {
                     let def = item.with_visibility(ra_ap_hir::Visibility::Public);
@@ -551,13 +577,72 @@ impl<'a> Extractor<'a> {
                             _ => (),
                         }
                     }
-                    if let Some((_type_id, _, _import)) = def.types {}
+                    if let Some((type_id, _, _import)) = def.types {
+                        if let ModuleDefId::AdtId(adt_id) = type_id {
+                            match adt_id {
+                                ra_ap_hir::AdtId::StructId(struct_id) => {
+                                    let data = db.struct_data(struct_id);
+                                    let content =
+                                        emit_variant_data(trap, data.variant_data.as_ref());
+                                    types.push(
+                                        trap.emit(generated::StructItem {
+                                            id: trap::TrapId::Star,
+                                            name: name.as_str().to_owned(),
+                                            content,
+                                            is_union: false,
+                                        })
+                                        .into(),
+                                    );
+                                }
+                                ra_ap_hir::AdtId::EnumId(enum_id) => {
+                                    let data = db.enum_data(enum_id);
+                                    let variants = data
+                                        .variants
+                                        .iter()
+                                        .map(|(enum_id, name)| {
+                                            let data = db.enum_variant_data(*enum_id);
+                                            let content =
+                                                emit_variant_data(trap, data.variant_data.as_ref());
+                                            trap.emit(generated::EnumVariant {
+                                                id: trap::TrapId::Star,
+                                                name: name.as_str().to_owned(),
+                                                content,
+                                            })
+                                        })
+                                        .collect();
+                                    types.push(
+                                        trap.emit(generated::EnumItem {
+                                            id: trap::TrapId::Star,
+                                            name: name.as_str().to_owned(),
+                                            variants,
+                                        })
+                                        .into(),
+                                    );
+                                }
+                                ra_ap_hir::AdtId::UnionId(union_id) => {
+                                    let data = db.union_data(union_id);
+                                    let content =
+                                        emit_variant_data(trap, data.variant_data.as_ref());
+                                    types.push(
+                                        trap.emit(generated::StructItem {
+                                            id: trap::TrapId::Star,
+                                            name: name.as_str().to_owned(),
+                                            content,
+                                            is_union: true,
+                                        })
+                                        .into(),
+                                    );
+                                }
+                            }
+                        }
+                    }
                 }
                 let label = trap.emit(generated::CrateModule {
                     id: trap::TrapId::Star,
                     name: name.to_owned(),
                     parent,
                     values,
+                    types,
                 });
                 for (name, child) in module
                     .children
