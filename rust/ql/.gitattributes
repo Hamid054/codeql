@@ -50,6 +50,8 @@
 /lib/codeql/rust/elements/DynTraitTypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/Element.qll linguist-generated
 /lib/codeql/rust/elements/Enum.qll linguist-generated
+/lib/codeql/rust/elements/EnumItem.qll linguist-generated
+/lib/codeql/rust/elements/EnumVariant.qll linguist-generated
 /lib/codeql/rust/elements/Expr.qll linguist-generated
 /lib/codeql/rust/elements/ExprStmt.qll linguist-generated
 /lib/codeql/rust/elements/ExternBlock.qll linguist-generated
@@ -158,6 +160,7 @@
 /lib/codeql/rust/elements/Stmt.qll linguist-generated
 /lib/codeql/rust/elements/StmtList.qll linguist-generated
 /lib/codeql/rust/elements/Struct.qll linguist-generated
+/lib/codeql/rust/elements/StructItem.qll linguist-generated
 /lib/codeql/rust/elements/Token.qll linguist-generated
 /lib/codeql/rust/elements/TokenTree.qll linguist-generated
 /lib/codeql/rust/elements/Trait.qll linguist-generated
@@ -173,6 +176,7 @@
 /lib/codeql/rust/elements/TypeArg.qll linguist-generated
 /lib/codeql/rust/elements/TypeBound.qll linguist-generated
 /lib/codeql/rust/elements/TypeBoundList.qll linguist-generated
+/lib/codeql/rust/elements/TypeItem.qll linguist-generated
 /lib/codeql/rust/elements/TypeParam.qll linguist-generated
 /lib/codeql/rust/elements/TypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/UnderscoreExpr.qll linguist-generated
@@ -186,6 +190,7 @@
 /lib/codeql/rust/elements/UseTreeList.qll linguist-generated
 /lib/codeql/rust/elements/ValueItem.qll linguist-generated
 /lib/codeql/rust/elements/Variant.qll linguist-generated
+/lib/codeql/rust/elements/VariantData.qll linguist-generated
 /lib/codeql/rust/elements/VariantList.qll linguist-generated
 /lib/codeql/rust/elements/Visibility.qll linguist-generated
 /lib/codeql/rust/elements/WhereClause.qll linguist-generated
@@ -267,6 +272,10 @@
 /lib/codeql/rust/elements/internal/DynTraitTypeReprConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/DynTraitTypeReprImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/EnumConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/EnumItemConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/EnumItemImpl.qll linguist-generated
+/lib/codeql/rust/elements/internal/EnumVariantConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/EnumVariantImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/ExprImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/ExprStmtConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/ExprStmtImpl.qll linguist-generated
@@ -413,6 +422,8 @@
 /lib/codeql/rust/elements/internal/StmtListConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/StmtListImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/StructConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/StructItemConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/StructItemImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/TokenImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/TokenTreeConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/TokenTreeImpl.qll linguist-generated
@@ -440,6 +451,7 @@
 /lib/codeql/rust/elements/internal/TypeBoundImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/TypeBoundListConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/TypeBoundListImpl.qll linguist-generated
+/lib/codeql/rust/elements/internal/TypeItemImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/TypeParamConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/TypeParamImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/TypeReprImpl.qll linguist-generated
@@ -460,6 +472,8 @@
 /lib/codeql/rust/elements/internal/ValueItemConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/ValueItemImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/VariantConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/VariantDataConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/VariantDataImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/VariantListConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/VariantListImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/VisibilityConstructor.qll linguist-generated
@@ -524,6 +538,8 @@
 /lib/codeql/rust/elements/internal/generated/DynTraitTypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Element.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Enum.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/EnumItem.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/EnumVariant.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Expr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/ExprStmt.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/ExternBlock.qll linguist-generated
@@ -636,6 +652,7 @@
 /lib/codeql/rust/elements/internal/generated/Stmt.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/StmtList.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Struct.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/StructItem.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Synth.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/SynthConstructors.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Token.qll linguist-generated
@@ -653,6 +670,7 @@
 /lib/codeql/rust/elements/internal/generated/TypeArg.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/TypeBound.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/TypeBoundList.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/TypeItem.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/TypeParam.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/TypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/UnderscoreExpr.qll linguist-generated
@@ -666,6 +684,7 @@
 /lib/codeql/rust/elements/internal/generated/UseTreeList.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/ValueItem.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Variant.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/VariantData.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/VariantList.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Visibility.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/WhereClause.qll linguist-generated
@@ -785,6 +804,8 @@
 /test/extractor-tests/generated/Enum/Enum_getVariantList.ql linguist-generated
 /test/extractor-tests/generated/Enum/Enum_getVisibility.ql linguist-generated
 /test/extractor-tests/generated/Enum/Enum_getWhereClause.ql linguist-generated
+/test/extractor-tests/generated/EnumItem/MISSING_SOURCE.txt linguist-generated
+/test/extractor-tests/generated/EnumVariant/MISSING_SOURCE.txt linguist-generated
 /test/extractor-tests/generated/ExprStmt/ExprStmt.ql linguist-generated
 /test/extractor-tests/generated/ExprStmt/ExprStmt_getExpr.ql linguist-generated
 /test/extractor-tests/generated/ExternBlock/ExternBlock.ql linguist-generated
@@ -1121,6 +1142,7 @@
 /test/extractor-tests/generated/Struct/Struct_getName.ql linguist-generated
 /test/extractor-tests/generated/Struct/Struct_getVisibility.ql linguist-generated
 /test/extractor-tests/generated/Struct/Struct_getWhereClause.ql linguist-generated
+/test/extractor-tests/generated/StructItem/MISSING_SOURCE.txt linguist-generated
 /test/extractor-tests/generated/TokenTree/TokenTree.ql linguist-generated
 /test/extractor-tests/generated/Trait/AssocItemList.ql linguist-generated
 /test/extractor-tests/generated/Trait/AssocItemList_getAssocItem.ql linguist-generated
@@ -1221,6 +1243,7 @@
 /test/extractor-tests/generated/Variant/Variant_getFieldList.ql linguist-generated
 /test/extractor-tests/generated/Variant/Variant_getName.ql linguist-generated
 /test/extractor-tests/generated/Variant/Variant_getVisibility.ql linguist-generated
+/test/extractor-tests/generated/VariantData/MISSING_SOURCE.txt linguist-generated
 /test/extractor-tests/generated/VariantList/VariantList.ql linguist-generated
 /test/extractor-tests/generated/VariantList/VariantList_getVariant.ql linguist-generated
 /test/extractor-tests/generated/Visibility/Visibility.ql linguist-generated

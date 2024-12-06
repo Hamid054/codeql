@@ -117,6 +117,32 @@ class ModuleContainer(Element):
     pass
 
 
+class VariantData(Element):
+    types: list["TypeRepr"]
+    fields: list[string]
+    is_record: predicate
+
+
+class TypeItem(Element):
+    pass
+
+
+class StructItem(TypeItem):
+    name: string
+    content: optional[VariantData]
+    is_union: predicate
+
+
+class EnumVariant(Element):
+    name: string
+    content: optional[VariantData]
+
+
+class EnumItem(TypeItem):
+    name: string
+    variants: list[EnumVariant]
+
+
 class ValueItem(Element):
     name: string
     type: "TypeRepr"
@@ -126,6 +152,7 @@ class CrateModule(ModuleContainer):
     parent: ModuleContainer
     name: string
     values: list[ValueItem]
+    types: list[TypeItem]
 
 
 class Crate(ModuleContainer):

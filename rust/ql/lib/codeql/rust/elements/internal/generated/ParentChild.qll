@@ -12,6 +12,21 @@ private module Impl {
     none()
   }
 
+  private Element getImmediateChildOfEnumVariant(
+    EnumVariant e, int index, string partialPredicateCall
+  ) {
+    exists(int b, int bElement, int n |
+      b = 0 and
+      bElement = b + 1 + max(int i | i = -1 or exists(getImmediateChildOfElement(e, i, _)) | i) and
+      n = bElement and
+      (
+        none()
+        or
+        result = getImmediateChildOfElement(e, index - b, partialPredicateCall)
+      )
+    )
+  }
+
   private Element getImmediateChildOfExtractorStep(
     ExtractorStep e, int index, string partialPredicateCall
   ) {
@@ -55,6 +70,19 @@ private module Impl {
     )
   }
 
+  private Element getImmediateChildOfTypeItem(TypeItem e, int index, string partialPredicateCall) {
+    exists(int b, int bElement, int n |
+      b = 0 and
+      bElement = b + 1 + max(int i | i = -1 or exists(getImmediateChildOfElement(e, i, _)) | i) and
+      n = bElement and
+      (
+        none()
+        or
+        result = getImmediateChildOfElement(e, index - b, partialPredicateCall)
+      )
+    )
+  }
+
   private Element getImmediateChildOfUnextracted(
     Unextracted e, int index, string partialPredicateCall
   ) {
@@ -71,6 +99,21 @@ private module Impl {
   }
 
   private Element getImmediateChildOfValueItem(ValueItem e, int index, string partialPredicateCall) {
+    exists(int b, int bElement, int n |
+      b = 0 and
+      bElement = b + 1 + max(int i | i = -1 or exists(getImmediateChildOfElement(e, i, _)) | i) and
+      n = bElement and
+      (
+        none()
+        or
+        result = getImmediateChildOfElement(e, index - b, partialPredicateCall)
+      )
+    )
+  }
+
+  private Element getImmediateChildOfVariantData(
+    VariantData e, int index, string partialPredicateCall
+  ) {
     exists(int b, int bElement, int n |
       b = 0 and
       bElement = b + 1 + max(int i | i = -1 or exists(getImmediateChildOfElement(e, i, _)) | i) and
@@ -126,6 +169,19 @@ private module Impl {
     )
   }
 
+  private Element getImmediateChildOfEnumItem(EnumItem e, int index, string partialPredicateCall) {
+    exists(int b, int bTypeItem, int n |
+      b = 0 and
+      bTypeItem = b + 1 + max(int i | i = -1 or exists(getImmediateChildOfTypeItem(e, i, _)) | i) and
+      n = bTypeItem and
+      (
+        none()
+        or
+        result = getImmediateChildOfTypeItem(e, index - b, partialPredicateCall)
+      )
+    )
+  }
+
   private Element getImmediateChildOfFormat(Format e, int index, string partialPredicateCall) {
     exists(int b, int bLocatable, int n, int nArgument |
       b = 0 and
@@ -170,6 +226,19 @@ private module Impl {
         none()
         or
         result = getImmediateChildOfUnextracted(e, index - b, partialPredicateCall)
+      )
+    )
+  }
+
+  private Element getImmediateChildOfStructItem(StructItem e, int index, string partialPredicateCall) {
+    exists(int b, int bTypeItem, int n |
+      b = 0 and
+      bTypeItem = b + 1 + max(int i | i = -1 or exists(getImmediateChildOfTypeItem(e, i, _)) | i) and
+      n = bTypeItem and
+      (
+        none()
+        or
+        result = getImmediateChildOfTypeItem(e, index - b, partialPredicateCall)
       )
     )
   }
@@ -4089,19 +4158,27 @@ private module Impl {
     // * none() simplifies generation, as we can append `or ...` without a special case for the first item
     none()
     or
+    result = getImmediateChildOfEnumVariant(e, index, partialAccessor)
+    or
     result = getImmediateChildOfExtractorStep(e, index, partialAccessor)
     or
     result = getImmediateChildOfValueItem(e, index, partialAccessor)
     or
+    result = getImmediateChildOfVariantData(e, index, partialAccessor)
+    or
     result = getImmediateChildOfCrate(e, index, partialAccessor)
     or
     result = getImmediateChildOfCrateModule(e, index, partialAccessor)
+    or
+    result = getImmediateChildOfEnumItem(e, index, partialAccessor)
     or
     result = getImmediateChildOfFormat(e, index, partialAccessor)
     or
     result = getImmediateChildOfFormatArgument(e, index, partialAccessor)
     or
     result = getImmediateChildOfMissing(e, index, partialAccessor)
+    or
+    result = getImmediateChildOfStructItem(e, index, partialAccessor)
     or
     result = getImmediateChildOfUnimplemented(e, index, partialAccessor)
     or

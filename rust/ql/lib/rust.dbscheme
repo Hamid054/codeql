@@ -120,12 +120,26 @@ locatable_locations(
 // from schema
 
 @element =
-  @extractor_step
+  @enum_variant
+| @extractor_step
 | @locatable
 | @module_container
+| @type_item
 | @unextracted
 | @value_item
+| @variant_data
 ;
+
+enum_variants(
+  unique int id: @enum_variant,
+  string name: string ref
+);
+
+#keyset[id]
+enum_variant_contents(
+  int id: @enum_variant ref,
+  int content: @variant_data ref
+);
 
 extractor_steps(
   unique int id: @extractor_step,
@@ -143,6 +157,11 @@ extractor_steps(
 | @crate_module
 ;
 
+@type_item =
+  @enum_item
+| @struct_item
+;
+
 @unextracted =
   @missing
 | @unimplemented
@@ -152,6 +171,29 @@ value_items(
   unique int id: @value_item,
   string name: string ref,
   int type_: @type_repr ref
+);
+
+variant_data(
+  unique int id: @variant_data
+);
+
+#keyset[id, index]
+variant_data_types(
+  int id: @variant_data ref,
+  int index: int ref,
+  int type_: @type_repr ref
+);
+
+#keyset[id, index]
+variant_data_fields(
+  int id: @variant_data ref,
+  int index: int ref,
+  string field: string ref
+);
+
+#keyset[id]
+variant_data_is_record(
+  int id: @variant_data ref
 );
 
 @ast_node =
@@ -265,8 +307,43 @@ crate_module_values(
   int value: @value_item ref
 );
 
+#keyset[id, index]
+crate_module_types(
+  int id: @crate_module ref,
+  int index: int ref,
+  int type_: @type_item ref
+);
+
+enum_items(
+  unique int id: @enum_item,
+  string name: string ref
+);
+
+#keyset[id, index]
+enum_item_variants(
+  int id: @enum_item ref,
+  int index: int ref,
+  int variant: @enum_variant ref
+);
+
 missings(
   unique int id: @missing
+);
+
+struct_items(
+  unique int id: @struct_item,
+  string name: string ref
+);
+
+#keyset[id]
+struct_item_contents(
+  int id: @struct_item ref,
+  int content: @variant_data ref
+);
+
+#keyset[id]
+struct_item_is_union(
+  int id: @struct_item ref
 );
 
 unimplementeds(

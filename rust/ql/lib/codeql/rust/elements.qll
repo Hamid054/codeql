@@ -53,6 +53,8 @@ import codeql.rust.elements.CrateModule
 import codeql.rust.elements.DynTraitTypeRepr
 import codeql.rust.elements.Element
 import codeql.rust.elements.Enum
+import codeql.rust.elements.EnumItem
+import codeql.rust.elements.EnumVariant
 import codeql.rust.elements.Expr
 import codeql.rust.elements.ExprStmt
 import codeql.rust.elements.ExternBlock
@@ -161,6 +163,7 @@ import codeql.rust.elements.Static
 import codeql.rust.elements.Stmt
 import codeql.rust.elements.StmtList
 import codeql.rust.elements.Struct
+import codeql.rust.elements.StructItem
 import codeql.rust.elements.Token
 import codeql.rust.elements.TokenTree
 import codeql.rust.elements.Trait
@@ -176,6 +179,7 @@ import codeql.rust.elements.TypeAlias
 import codeql.rust.elements.TypeArg
 import codeql.rust.elements.TypeBound
 import codeql.rust.elements.TypeBoundList
+import codeql.rust.elements.TypeItem
 import codeql.rust.elements.TypeParam
 import codeql.rust.elements.TypeRepr
 import codeql.rust.elements.UnderscoreExpr
@@ -189,6 +193,7 @@ import codeql.rust.elements.UseTree
 import codeql.rust.elements.UseTreeList
 import codeql.rust.elements.ValueItem
 import codeql.rust.elements.Variant
+import codeql.rust.elements.VariantData
 import codeql.rust.elements.VariantList
 import codeql.rust.elements.Visibility
 import codeql.rust.elements.WhereClause

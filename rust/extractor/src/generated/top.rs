@@ -23,6 +23,39 @@ impl trap::TrapClass for Element {
 }
 
 #[derive(Debug)]
+pub struct EnumVariant {
+    pub id: trap::TrapId<EnumVariant>,
+    pub name: String,
+    pub content: Option<trap::Label<VariantData>>,
+}
+
+impl trap::TrapEntry for EnumVariant {
+    fn extract_id(&mut self) -> trap::TrapId<Self> {
+        std::mem::replace(&mut self.id, trap::TrapId::Star)
+    }
+
+    fn emit(self, id: trap::Label<Self>, out: &mut trap::Writer) {
+        out.add_tuple("enum_variants", vec![id.into(), self.name.into()]);
+        if let Some(v) = self.content {
+            out.add_tuple("enum_variant_contents", vec![id.into(), v.into()]);
+        }
+    }
+}
+
+impl trap::TrapClass for EnumVariant {
+    fn class_name() -> &'static str { "EnumVariant" }
+}
+
+impl From<trap::Label<EnumVariant>> for trap::Label<Element> {
+    fn from(value: trap::Label<EnumVariant>) -> Self {
+        // SAFETY: this is safe because in the dbscheme EnumVariant is a subclass of Element
+        unsafe {
+            Self::from_untyped(value.as_untyped())
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct ExtractorStep {
     pub id: trap::TrapId<ExtractorStep>,
     pub action: String,
@@ -90,6 +123,24 @@ impl From<trap::Label<ModuleContainer>> for trap::Label<Element> {
 }
 
 #[derive(Debug)]
+pub struct TypeItem {
+    _unused: ()
+}
+
+impl trap::TrapClass for TypeItem {
+    fn class_name() -> &'static str { "TypeItem" }
+}
+
+impl From<trap::Label<TypeItem>> for trap::Label<Element> {
+    fn from(value: trap::Label<TypeItem>) -> Self {
+        // SAFETY: this is safe because in the dbscheme TypeItem is a subclass of Element
+        unsafe {
+            Self::from_untyped(value.as_untyped())
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct Unextracted {
     _unused: ()
 }
@@ -131,6 +182,46 @@ impl trap::TrapClass for ValueItem {
 impl From<trap::Label<ValueItem>> for trap::Label<Element> {
     fn from(value: trap::Label<ValueItem>) -> Self {
         // SAFETY: this is safe because in the dbscheme ValueItem is a subclass of Element
+        unsafe {
+            Self::from_untyped(value.as_untyped())
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct VariantData {
+    pub id: trap::TrapId<VariantData>,
+    pub types: Vec<trap::Label<TypeRepr>>,
+    pub fields: Vec<String>,
+    pub is_record: bool,
+}
+
+impl trap::TrapEntry for VariantData {
+    fn extract_id(&mut self) -> trap::TrapId<Self> {
+        std::mem::replace(&mut self.id, trap::TrapId::Star)
+    }
+
+    fn emit(self, id: trap::Label<Self>, out: &mut trap::Writer) {
+        out.add_tuple("variant_data", vec![id.into()]);
+        for (i, v) in self.types.into_iter().enumerate() {
+            out.add_tuple("variant_data_types", vec![id.into(), i.into(), v.into()]);
+        }
+        for (i, v) in self.fields.into_iter().enumerate() {
+            out.add_tuple("variant_data_fields", vec![id.into(), i.into(), v.into()]);
+        }
+        if self.is_record {
+            out.add_tuple("variant_data_is_record", vec![id.into()]);
+        }
+    }
+}
+
+impl trap::TrapClass for VariantData {
+    fn class_name() -> &'static str { "VariantData" }
+}
+
+impl From<trap::Label<VariantData>> for trap::Label<Element> {
+    fn from(value: trap::Label<VariantData>) -> Self {
+        // SAFETY: this is safe because in the dbscheme VariantData is a subclass of Element
         unsafe {
             Self::from_untyped(value.as_untyped())
         }
@@ -223,6 +314,7 @@ pub struct CrateModule {
     pub parent: trap::Label<ModuleContainer>,
     pub name: String,
     pub values: Vec<trap::Label<ValueItem>>,
+    pub types: Vec<trap::Label<TypeItem>>,
 }
 
 impl trap::TrapEntry for CrateModule {
@@ -234,6 +326,9 @@ impl trap::TrapEntry for CrateModule {
         out.add_tuple("crate_modules", vec![id.into(), self.parent.into(), self.name.into()]);
         for (i, v) in self.values.into_iter().enumerate() {
             out.add_tuple("crate_module_values", vec![id.into(), i.into(), v.into()]);
+        }
+        for (i, v) in self.types.into_iter().enumerate() {
+            out.add_tuple("crate_module_types", vec![id.into(), i.into(), v.into()]);
         }
     }
 }
@@ -254,6 +349,48 @@ impl From<trap::Label<CrateModule>> for trap::Label<Element> {
 impl From<trap::Label<CrateModule>> for trap::Label<ModuleContainer> {
     fn from(value: trap::Label<CrateModule>) -> Self {
         // SAFETY: this is safe because in the dbscheme CrateModule is a subclass of ModuleContainer
+        unsafe {
+            Self::from_untyped(value.as_untyped())
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct EnumItem {
+    pub id: trap::TrapId<EnumItem>,
+    pub name: String,
+    pub variants: Vec<trap::Label<EnumVariant>>,
+}
+
+impl trap::TrapEntry for EnumItem {
+    fn extract_id(&mut self) -> trap::TrapId<Self> {
+        std::mem::replace(&mut self.id, trap::TrapId::Star)
+    }
+
+    fn emit(self, id: trap::Label<Self>, out: &mut trap::Writer) {
+        out.add_tuple("enum_items", vec![id.into(), self.name.into()]);
+        for (i, v) in self.variants.into_iter().enumerate() {
+            out.add_tuple("enum_item_variants", vec![id.into(), i.into(), v.into()]);
+        }
+    }
+}
+
+impl trap::TrapClass for EnumItem {
+    fn class_name() -> &'static str { "EnumItem" }
+}
+
+impl From<trap::Label<EnumItem>> for trap::Label<Element> {
+    fn from(value: trap::Label<EnumItem>) -> Self {
+        // SAFETY: this is safe because in the dbscheme EnumItem is a subclass of Element
+        unsafe {
+            Self::from_untyped(value.as_untyped())
+        }
+    }
+}
+
+impl From<trap::Label<EnumItem>> for trap::Label<TypeItem> {
+    fn from(value: trap::Label<EnumItem>) -> Self {
+        // SAFETY: this is safe because in the dbscheme EnumItem is a subclass of TypeItem
         unsafe {
             Self::from_untyped(value.as_untyped())
         }
@@ -291,6 +428,52 @@ impl From<trap::Label<Missing>> for trap::Label<Element> {
 impl From<trap::Label<Missing>> for trap::Label<Unextracted> {
     fn from(value: trap::Label<Missing>) -> Self {
         // SAFETY: this is safe because in the dbscheme Missing is a subclass of Unextracted
+        unsafe {
+            Self::from_untyped(value.as_untyped())
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct StructItem {
+    pub id: trap::TrapId<StructItem>,
+    pub name: String,
+    pub content: Option<trap::Label<VariantData>>,
+    pub is_union: bool,
+}
+
+impl trap::TrapEntry for StructItem {
+    fn extract_id(&mut self) -> trap::TrapId<Self> {
+        std::mem::replace(&mut self.id, trap::TrapId::Star)
+    }
+
+    fn emit(self, id: trap::Label<Self>, out: &mut trap::Writer) {
+        out.add_tuple("struct_items", vec![id.into(), self.name.into()]);
+        if let Some(v) = self.content {
+            out.add_tuple("struct_item_contents", vec![id.into(), v.into()]);
+        }
+        if self.is_union {
+            out.add_tuple("struct_item_is_union", vec![id.into()]);
+        }
+    }
+}
+
+impl trap::TrapClass for StructItem {
+    fn class_name() -> &'static str { "StructItem" }
+}
+
+impl From<trap::Label<StructItem>> for trap::Label<Element> {
+    fn from(value: trap::Label<StructItem>) -> Self {
+        // SAFETY: this is safe because in the dbscheme StructItem is a subclass of Element
+        unsafe {
+            Self::from_untyped(value.as_untyped())
+        }
+    }
+}
+
+impl From<trap::Label<StructItem>> for trap::Label<TypeItem> {
+    fn from(value: trap::Label<StructItem>) -> Self {
+        // SAFETY: this is safe because in the dbscheme StructItem is a subclass of TypeItem
         unsafe {
             Self::from_untyped(value.as_untyped())
         }

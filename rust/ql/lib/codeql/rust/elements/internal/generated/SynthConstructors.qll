@@ -44,6 +44,8 @@ import codeql.rust.elements.internal.CrateConstructor
 import codeql.rust.elements.internal.CrateModuleConstructor
 import codeql.rust.elements.internal.DynTraitTypeReprConstructor
 import codeql.rust.elements.internal.EnumConstructor
+import codeql.rust.elements.internal.EnumItemConstructor
+import codeql.rust.elements.internal.EnumVariantConstructor
 import codeql.rust.elements.internal.ExprStmtConstructor
 import codeql.rust.elements.internal.ExternBlockConstructor
 import codeql.rust.elements.internal.ExternCrateConstructor
@@ -137,6 +139,7 @@ import codeql.rust.elements.internal.SourceFileConstructor
 import codeql.rust.elements.internal.StaticConstructor
 import codeql.rust.elements.internal.StmtListConstructor
 import codeql.rust.elements.internal.StructConstructor
+import codeql.rust.elements.internal.StructItemConstructor
 import codeql.rust.elements.internal.TokenTreeConstructor
 import codeql.rust.elements.internal.TraitConstructor
 import codeql.rust.elements.internal.TraitAliasConstructor
@@ -161,6 +164,7 @@ import codeql.rust.elements.internal.UseTreeConstructor
 import codeql.rust.elements.internal.UseTreeListConstructor
 import codeql.rust.elements.internal.ValueItemConstructor
 import codeql.rust.elements.internal.VariantConstructor
+import codeql.rust.elements.internal.VariantDataConstructor
 import codeql.rust.elements.internal.VariantListConstructor
 import codeql.rust.elements.internal.VisibilityConstructor
 import codeql.rust.elements.internal.WhereClauseConstructor

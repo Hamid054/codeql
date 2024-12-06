@@ -15,6 +15,23 @@ module Raw {
   /**
    * INTERNAL: Do not use.
    */
+  class EnumVariant extends @enum_variant, Element {
+    override string toString() { result = "EnumVariant" }
+
+    /**
+     * Gets the name of this enum variant.
+     */
+    string getName() { enum_variants(this, result) }
+
+    /**
+     * Gets the content of this enum variant, if it exists.
+     */
+    VariantData getContent() { enum_variant_contents(this, result) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
   class ExtractorStep extends @extractor_step, Element {
     override string toString() { result = "ExtractorStep" }
 
@@ -46,6 +63,11 @@ module Raw {
 
   /**
    * INTERNAL: Do not use.
+   */
+  class TypeItem extends @type_item, Element { }
+
+  /**
+   * INTERNAL: Do not use.
    * The base class marking everything that was not properly extracted for some reason, such as:
    * * syntax errors
    * * insufficient context information
@@ -68,6 +90,28 @@ module Raw {
      * Gets the type of this value item.
      */
     TypeRepr getType() { value_items(this, _, result) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class VariantData extends @variant_data, Element {
+    override string toString() { result = "VariantData" }
+
+    /**
+     * Gets the `index`th type of this variant data (0-based).
+     */
+    TypeRepr getType(int index) { variant_data_types(this, index, result) }
+
+    /**
+     * Gets the `index`th field of this variant data (0-based).
+     */
+    string getField(int index) { variant_data_fields(this, index, result) }
+
+    /**
+     * Holds if this variant data is record.
+     */
+    predicate isRecord() { variant_data_is_record(this) }
   }
 
   /**
@@ -122,6 +166,28 @@ module Raw {
      * Gets the `index`th value of this crate module (0-based).
      */
     ValueItem getValue(int index) { crate_module_values(this, index, result) }
+
+    /**
+     * Gets the `index`th type of this crate module (0-based).
+     */
+    TypeItem getType(int index) { crate_module_types(this, index, result) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class EnumItem extends @enum_item, TypeItem {
+    override string toString() { result = "EnumItem" }
+
+    /**
+     * Gets the name of this enum item.
+     */
+    string getName() { enum_items(this, result) }
+
+    /**
+     * Gets the `index`th variant of this enum item (0-based).
+     */
+    EnumVariant getVariant(int index) { enum_item_variants(this, index, result) }
   }
 
   /**
@@ -130,6 +196,28 @@ module Raw {
    */
   class Missing extends @missing, Unextracted {
     override string toString() { result = "Missing" }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class StructItem extends @struct_item, TypeItem {
+    override string toString() { result = "StructItem" }
+
+    /**
+     * Gets the name of this struct item.
+     */
+    string getName() { struct_items(this, result) }
+
+    /**
+     * Gets the content of this struct item, if it exists.
+     */
+    VariantData getContent() { struct_item_contents(this, result) }
+
+    /**
+     * Holds if this struct item is union.
+     */
+    predicate isUnion() { struct_item_is_union(this) }
   }
 
   /**
