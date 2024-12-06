@@ -456,8 +456,13 @@ impl<'a> Extractor<'a> {
                 DefMap::ROOT,
                 &mut trap,
             );
-            trap.commit();
-
+            trap.commit().unwrap_or_else(|err| {
+                log::error!(
+                    "Failed to write trap file for crate: {}: {}",
+                    root_module_file,
+                    err.to_string()
+                )
+            });
             fn go(
                 db: &dyn HirDatabase,
                 map: &DefMap,
