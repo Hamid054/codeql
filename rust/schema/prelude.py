@@ -113,12 +113,65 @@ class ExtractorStep(Element):
     duration_ms: int
 
 
+class Type(Element):
+    pass
+
+
+class NeverType(Type):
+    pass
+
+
+class PlaceholderType(Type):
+    pass
+
+
+class TupleType(Type):
+    fields: list[Type]
+
+
+class RawPtrType(Type):
+    type: Type
+    is_mut: predicate
+
+
+class ReferenceType(Type):
+    type: Type
+    lifetime: optional[string]
+    is_mut: predicate
+
+
+class ArrayType(Type):
+    type: Type
+
+
+class SliceType(Type):
+    type: Type
+
+
+class FunctionType(Type):
+    self_type: optional[Type]
+    params: list[Type]
+    ret_type: Type
+    is_const: predicate
+    is_async: predicate
+    is_unsafe: predicate
+    has_varargs: predicate
+
+
+class PathType(Type):
+    path: list[string]
+
+
+class ErrorType(Type):
+    pass
+
+
 class ModuleContainer(Element):
     pass
 
 
 class VariantData(Element):
-    types: list["TypeRepr"]
+    types: list[Type]
     fields: list[string]
     is_record: predicate
 
@@ -145,7 +198,7 @@ class EnumItem(TypeItem):
 
 class ValueItem(Element):
     name: string
-    type: "TypeRepr"
+    type: Type
 
 
 class CrateModule(ModuleContainer):

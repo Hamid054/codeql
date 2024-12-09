@@ -7,7 +7,7 @@
 private import codeql.rust.elements.internal.generated.Synth
 private import codeql.rust.elements.internal.generated.Raw
 import codeql.rust.elements.internal.ElementImpl::Impl as ElementImpl
-import codeql.rust.elements.TypeRepr
+import codeql.rust.elements.Type
 
 /**
  * INTERNAL: This module contains the fully generated definition of `ValueItem` and should not
@@ -29,9 +29,9 @@ module Generated {
     /**
      * Gets the type of this value item.
      */
-    TypeRepr getType() {
+    Type getType() {
       result =
-        Synth::convertTypeReprFromRaw(Synth::convertValueItemToRaw(this).(Raw::ValueItem).getType())
+        Synth::convertTypeFromRaw(Synth::convertValueItemToRaw(this).(Raw::ValueItem).getType())
     }
   }
 }

@@ -7,7 +7,7 @@
 private import codeql.rust.elements.internal.generated.Synth
 private import codeql.rust.elements.internal.generated.Raw
 import codeql.rust.elements.internal.ElementImpl::Impl as ElementImpl
-import codeql.rust.elements.TypeRepr
+import codeql.rust.elements.Type
 
 /**
  * INTERNAL: This module contains the fully generated definition of `VariantData` and should not
@@ -24,9 +24,9 @@ module Generated {
     /**
      * Gets the `index`th type of this variant data (0-based).
      */
-    TypeRepr getType(int index) {
+    Type getType(int index) {
       result =
-        Synth::convertTypeReprFromRaw(Synth::convertVariantDataToRaw(this)
+        Synth::convertTypeFromRaw(Synth::convertVariantDataToRaw(this)
               .(Raw::VariantData)
               .getType(index))
     }
@@ -34,7 +34,7 @@ module Generated {
     /**
      * Gets any of the types of this variant data.
      */
-    final TypeRepr getAType() { result = this.getType(_) }
+    final Type getAType() { result = this.getType(_) }
 
     /**
      * Gets the number of types of this variant data.

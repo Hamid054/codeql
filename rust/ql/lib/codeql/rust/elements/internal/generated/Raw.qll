@@ -64,6 +64,11 @@ module Raw {
   /**
    * INTERNAL: Do not use.
    */
+  class Type extends @type, Element { }
+
+  /**
+   * INTERNAL: Do not use.
+   */
   class TypeItem extends @type_item, Element { }
 
   /**
@@ -89,7 +94,7 @@ module Raw {
     /**
      * Gets the type of this value item.
      */
-    TypeRepr getType() { value_items(this, _, result) }
+    Type getType() { value_items(this, _, result) }
   }
 
   /**
@@ -101,7 +106,7 @@ module Raw {
     /**
      * Gets the `index`th type of this variant data (0-based).
      */
-    TypeRepr getType(int index) { variant_data_types(this, index, result) }
+    Type getType(int index) { variant_data_types(this, index, result) }
 
     /**
      * Gets the `index`th field of this variant data (0-based).
@@ -112,6 +117,18 @@ module Raw {
      * Holds if this variant data is record.
      */
     predicate isRecord() { variant_data_is_record(this) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class ArrayType extends @array_type, Type {
+    override string toString() { result = "ArrayType" }
+
+    /**
+     * Gets the type of this array type.
+     */
+    Type getType() { array_types(this, result) }
   }
 
   /**
@@ -192,10 +209,136 @@ module Raw {
 
   /**
    * INTERNAL: Do not use.
+   */
+  class ErrorType extends @error_type, Type {
+    override string toString() { result = "ErrorType" }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class FunctionType extends @function_type, Type {
+    override string toString() { result = "FunctionType" }
+
+    /**
+     * Gets the self type of this function type, if it exists.
+     */
+    Type getSelfType() { function_type_self_types(this, result) }
+
+    /**
+     * Gets the `index`th parameter of this function type (0-based).
+     */
+    Type getParam(int index) { function_type_params(this, index, result) }
+
+    /**
+     * Gets the ret type of this function type.
+     */
+    Type getRetType() { function_types(this, result) }
+
+    /**
+     * Holds if this function type is const.
+     */
+    predicate isConst() { function_type_is_const(this) }
+
+    /**
+     * Holds if this function type is async.
+     */
+    predicate isAsync() { function_type_is_async(this) }
+
+    /**
+     * Holds if this function type is unsafe.
+     */
+    predicate isUnsafe() { function_type_is_unsafe(this) }
+
+    /**
+     * Holds if this function type has varargs.
+     */
+    predicate hasVarargs() { function_type_has_varargs(this) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
    * The base class marking errors during parsing or resolution.
    */
   class Missing extends @missing, Unextracted {
     override string toString() { result = "Missing" }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class NeverType extends @never_type, Type {
+    override string toString() { result = "NeverType" }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class PathType extends @path_type, Type {
+    override string toString() { result = "PathType" }
+
+    /**
+     * Gets the `index`th path of this path type (0-based).
+     */
+    string getPath(int index) { path_type_paths(this, index, result) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class PlaceholderType extends @placeholder_type, Type {
+    override string toString() { result = "PlaceholderType" }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class RawPtrType extends @raw_ptr_type, Type {
+    override string toString() { result = "RawPtrType" }
+
+    /**
+     * Gets the type of this raw ptr type.
+     */
+    Type getType() { raw_ptr_types(this, result) }
+
+    /**
+     * Holds if this raw ptr type is mut.
+     */
+    predicate isMut() { raw_ptr_type_is_mut(this) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class ReferenceType extends @reference_type, Type {
+    override string toString() { result = "ReferenceType" }
+
+    /**
+     * Gets the type of this reference type.
+     */
+    Type getType() { reference_types(this, result) }
+
+    /**
+     * Gets the lifetime of this reference type, if it exists.
+     */
+    string getLifetime() { reference_type_lifetimes(this, result) }
+
+    /**
+     * Holds if this reference type is mut.
+     */
+    predicate isMut() { reference_type_is_mut(this) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class SliceType extends @slice_type, Type {
+    override string toString() { result = "SliceType" }
+
+    /**
+     * Gets the type of this slice type.
+     */
+    Type getType() { slice_types(this, result) }
   }
 
   /**
@@ -218,6 +361,18 @@ module Raw {
      * Holds if this struct item is union.
      */
     predicate isUnion() { struct_item_is_union(this) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class TupleType extends @tuple_type, Type {
+    override string toString() { result = "TupleType" }
+
+    /**
+     * Gets the `index`th field of this tuple type (0-based).
+     */
+    Type getField(int index) { tuple_type_fields(this, index, result) }
   }
 
   /**

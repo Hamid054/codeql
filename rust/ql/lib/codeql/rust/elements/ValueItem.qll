@@ -5,6 +5,6 @@
 
 private import internal.ValueItemImpl
 import codeql.rust.elements.Element
-import codeql.rust.elements.TypeRepr
+import codeql.rust.elements.Type
 
 final class ValueItem = Impl::ValueItem;

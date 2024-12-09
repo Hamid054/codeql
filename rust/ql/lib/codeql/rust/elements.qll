@@ -10,6 +10,7 @@ import codeql.rust.elements.ArgList
 import codeql.rust.elements.ArrayExpr
 import codeql.rust.elements.ArrayListExpr
 import codeql.rust.elements.ArrayRepeatExpr
+import codeql.rust.elements.ArrayType
 import codeql.rust.elements.ArrayTypeRepr
 import codeql.rust.elements.AsmClobberAbi
 import codeql.rust.elements.AsmConst
@@ -55,6 +56,7 @@ import codeql.rust.elements.Element
 import codeql.rust.elements.Enum
 import codeql.rust.elements.EnumItem
 import codeql.rust.elements.EnumVariant
+import codeql.rust.elements.ErrorType
 import codeql.rust.elements.Expr
 import codeql.rust.elements.ExprStmt
 import codeql.rust.elements.ExternBlock
@@ -72,6 +74,7 @@ import codeql.rust.elements.FormatArgsExpr
 import codeql.rust.elements.FormatArgument
 import codeql.rust.elements.FormatTemplateVariableAccess
 import codeql.rust.elements.Function
+import codeql.rust.elements.FunctionType
 import codeql.rust.elements.GenericArg
 import codeql.rust.elements.GenericArgList
 import codeql.rust.elements.GenericParam
@@ -116,6 +119,7 @@ import codeql.rust.elements.Module
 import codeql.rust.elements.ModuleContainer
 import codeql.rust.elements.Name
 import codeql.rust.elements.NameRef
+import codeql.rust.elements.NeverType
 import codeql.rust.elements.NeverTypeRepr
 import codeql.rust.elements.OffsetOfExpr
 import codeql.rust.elements.OrPat
@@ -133,11 +137,14 @@ import codeql.rust.elements.PathExpr
 import codeql.rust.elements.PathExprBase
 import codeql.rust.elements.PathPat
 import codeql.rust.elements.PathSegment
+import codeql.rust.elements.PathType
 import codeql.rust.elements.PathTypeRepr
+import codeql.rust.elements.PlaceholderType
 import codeql.rust.elements.PrefixExpr
 import codeql.rust.elements.PtrTypeRepr
 import codeql.rust.elements.RangeExpr
 import codeql.rust.elements.RangePat
+import codeql.rust.elements.RawPtrType
 import codeql.rust.elements.RecordExpr
 import codeql.rust.elements.RecordExprField
 import codeql.rust.elements.RecordExprFieldList
@@ -149,6 +156,7 @@ import codeql.rust.elements.RecordPatFieldList
 import codeql.rust.elements.RefExpr
 import codeql.rust.elements.RefPat
 import codeql.rust.elements.RefTypeRepr
+import codeql.rust.elements.ReferenceType
 import codeql.rust.elements.Rename
 import codeql.rust.elements.Resolvable
 import codeql.rust.elements.RestPat
@@ -157,6 +165,7 @@ import codeql.rust.elements.ReturnExpr
 import codeql.rust.elements.ReturnTypeSyntax
 import codeql.rust.elements.SelfParam
 import codeql.rust.elements.SlicePat
+import codeql.rust.elements.SliceType
 import codeql.rust.elements.SliceTypeRepr
 import codeql.rust.elements.SourceFile
 import codeql.rust.elements.Static
@@ -174,7 +183,9 @@ import codeql.rust.elements.TupleField
 import codeql.rust.elements.TupleFieldList
 import codeql.rust.elements.TuplePat
 import codeql.rust.elements.TupleStructPat
+import codeql.rust.elements.TupleType
 import codeql.rust.elements.TupleTypeRepr
+import codeql.rust.elements.Type
 import codeql.rust.elements.TypeAlias
 import codeql.rust.elements.TypeArg
 import codeql.rust.elements.TypeBound

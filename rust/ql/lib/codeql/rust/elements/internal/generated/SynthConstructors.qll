@@ -8,6 +8,7 @@ import codeql.rust.elements.internal.ArgListConstructor
 import codeql.rust.elements.internal.ArrayExprInternalConstructor
 import codeql.rust.elements.internal.ArrayListExprConstructor
 import codeql.rust.elements.internal.ArrayRepeatExprConstructor
+import codeql.rust.elements.internal.ArrayTypeConstructor
 import codeql.rust.elements.internal.ArrayTypeReprConstructor
 import codeql.rust.elements.internal.AsmClobberAbiConstructor
 import codeql.rust.elements.internal.AsmConstConstructor
@@ -46,6 +47,7 @@ import codeql.rust.elements.internal.DynTraitTypeReprConstructor
 import codeql.rust.elements.internal.EnumConstructor
 import codeql.rust.elements.internal.EnumItemConstructor
 import codeql.rust.elements.internal.EnumVariantConstructor
+import codeql.rust.elements.internal.ErrorTypeConstructor
 import codeql.rust.elements.internal.ExprStmtConstructor
 import codeql.rust.elements.internal.ExternBlockConstructor
 import codeql.rust.elements.internal.ExternCrateConstructor
@@ -61,6 +63,7 @@ import codeql.rust.elements.internal.FormatArgsExprConstructor
 import codeql.rust.elements.internal.FormatArgumentConstructor
 import codeql.rust.elements.internal.FormatTemplateVariableAccessConstructor
 import codeql.rust.elements.internal.FunctionConstructor
+import codeql.rust.elements.internal.FunctionTypeConstructor
 import codeql.rust.elements.internal.GenericArgListConstructor
 import codeql.rust.elements.internal.GenericParamListConstructor
 import codeql.rust.elements.internal.IdentPatConstructor
@@ -98,6 +101,7 @@ import codeql.rust.elements.internal.MissingConstructor
 import codeql.rust.elements.internal.ModuleConstructor
 import codeql.rust.elements.internal.NameConstructor
 import codeql.rust.elements.internal.NameRefConstructor
+import codeql.rust.elements.internal.NeverTypeConstructor
 import codeql.rust.elements.internal.NeverTypeReprConstructor
 import codeql.rust.elements.internal.OffsetOfExprConstructor
 import codeql.rust.elements.internal.OrPatConstructor
@@ -111,11 +115,14 @@ import codeql.rust.elements.internal.PathConstructor
 import codeql.rust.elements.internal.PathExprConstructor
 import codeql.rust.elements.internal.PathPatConstructor
 import codeql.rust.elements.internal.PathSegmentConstructor
+import codeql.rust.elements.internal.PathTypeConstructor
 import codeql.rust.elements.internal.PathTypeReprConstructor
+import codeql.rust.elements.internal.PlaceholderTypeConstructor
 import codeql.rust.elements.internal.PrefixExprConstructor
 import codeql.rust.elements.internal.PtrTypeReprConstructor
 import codeql.rust.elements.internal.RangeExprConstructor
 import codeql.rust.elements.internal.RangePatConstructor
+import codeql.rust.elements.internal.RawPtrTypeConstructor
 import codeql.rust.elements.internal.RecordExprConstructor
 import codeql.rust.elements.internal.RecordExprFieldConstructor
 import codeql.rust.elements.internal.RecordExprFieldListConstructor
@@ -127,6 +134,7 @@ import codeql.rust.elements.internal.RecordPatFieldListConstructor
 import codeql.rust.elements.internal.RefExprConstructor
 import codeql.rust.elements.internal.RefPatConstructor
 import codeql.rust.elements.internal.RefTypeReprConstructor
+import codeql.rust.elements.internal.ReferenceTypeConstructor
 import codeql.rust.elements.internal.RenameConstructor
 import codeql.rust.elements.internal.RestPatConstructor
 import codeql.rust.elements.internal.RetTypeReprConstructor
@@ -134,6 +142,7 @@ import codeql.rust.elements.internal.ReturnExprConstructor
 import codeql.rust.elements.internal.ReturnTypeSyntaxConstructor
 import codeql.rust.elements.internal.SelfParamConstructor
 import codeql.rust.elements.internal.SlicePatConstructor
+import codeql.rust.elements.internal.SliceTypeConstructor
 import codeql.rust.elements.internal.SliceTypeReprConstructor
 import codeql.rust.elements.internal.SourceFileConstructor
 import codeql.rust.elements.internal.StaticConstructor
@@ -149,6 +158,7 @@ import codeql.rust.elements.internal.TupleFieldConstructor
 import codeql.rust.elements.internal.TupleFieldListConstructor
 import codeql.rust.elements.internal.TuplePatConstructor
 import codeql.rust.elements.internal.TupleStructPatConstructor
+import codeql.rust.elements.internal.TupleTypeConstructor
 import codeql.rust.elements.internal.TupleTypeReprConstructor
 import codeql.rust.elements.internal.TypeAliasConstructor
 import codeql.rust.elements.internal.TypeArgConstructor
