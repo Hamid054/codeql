@@ -40,35 +40,11 @@ struct Extractor<'a> {
     steps: Vec<ExtractionStep>,
 }
 
-fn emit_hir_path(
-    trap: &mut TrapFile,
-    path: &ra_ap_hir_def::path::Path,
-) -> trap::Label<generated::Path> {
-    let part = path.segments().last().map(|segment| {
-        let name_ref = trap.emit(generated::NameRef {
-            id: trap::TrapId::Star,
-            text: Some(segment.name.as_str().to_owned()),
-        });
-        trap.emit(generated::PathSegment {
-            id: trap::TrapId::Star,
-            generic_arg_list: None,
-            name_ref: Some(name_ref),
-            param_list: None,
-            path_type: None,
-            ret_type: None,
-            return_type_syntax: None,
-            type_repr: None,
-        })
-    });
-    let qualifier = path
-        .mod_path()
-        .filter(|p| !p.segments().is_empty())
-        .and_then(|_| path.qualifier().as_ref().map(|p| emit_hir_path(trap, p)));
-    trap.emit(generated::Path {
-        id: trap::TrapId::Star,
-        qualifier,
-        part,
-    })
+fn emit_hir_path(path: &ra_ap_hir_def::path::Path) -> Vec<String> {
+    path.segments()
+        .iter()
+        .map(|x| x.name.as_str().to_owned())
+        .collect()
 }
 fn emit_hir_fn(
     trap: &mut TrapFile,
@@ -78,162 +54,113 @@ fn emit_hir_fn(
     is_async: bool,
     is_const: bool,
     is_unsafe: bool,
-) -> trap::Label<generated::FnPtrTypeRepr> {
-    let ret = emit_hir_typeref(trap, ret_type);
+) -> trap::Label<generated::FunctionType> {
+    let ret_type = emit_hir_typeref(trap, ret_type);
 
-    let ret = trap.emit(generated::RetTypeRepr {
+    let self_type = self_type.map(|ty| emit_hir_typeref(trap, ty));
+    let params = params.iter().map(|t| emit_hir_typeref(trap, t)).collect();
+
+    trap.emit(generated::FunctionType {
         id: trap::TrapId::Star,
-        type_repr: ret,
-    });
-    let self_param = self_type.map(|ty| {
-        let type_repr = emit_hir_typeref(trap, ty);
-        trap.emit(generated::SelfParam {
-            id: trap::TrapId::Star,
-            attrs: vec![],
-            type_repr,
-            is_mut: false,
-            lifetime: None,
-            name: None,
-        })
-    });
-    let params = params
-        .iter()
-        .map(|t| {
-            let type_repr = emit_hir_typeref(trap, t);
-            trap.emit(generated::Param {
-                id: trap::TrapId::Star,
-                attrs: vec![],
-                type_repr,
-                pat: None,
-            })
-        })
-        .collect();
-    let params = trap.emit(generated::ParamList {
-        id: trap::TrapId::Star,
-        params,
-        self_param,
-    });
-    trap.emit(generated::FnPtrTypeRepr {
-        id: trap::TrapId::Star,
-        abi: None,
         is_async,
         is_const,
         is_unsafe,
-        param_list: Some(params),
-        ret_type: Some(ret),
+        self_type,
+        ret_type,
+        params,
+        has_varargs: false,
     })
 }
-fn emit_hir_typeref(trap: &mut TrapFile, ty: &TypeRef) -> Option<trap::Label<generated::TypeRepr>> {
+fn emit_hir_typeref(trap: &mut TrapFile, ty: &TypeRef) -> trap::Label<generated::Type> {
     match ty {
-        TypeRef::Never => Some(
-            trap.emit(generated::NeverTypeRepr {
+        TypeRef::Never => trap
+            .emit(generated::NeverType {
                 id: trap::TrapId::Star,
             })
             .into(),
-        ),
-        TypeRef::Placeholder => Some(
-            trap.emit(generated::InferTypeRepr {
+
+        TypeRef::Placeholder => trap
+            .emit(generated::PlaceholderType {
                 id: trap::TrapId::Star,
             })
             .into(),
-        ),
+
         TypeRef::Tuple(fields) => {
             let fields = fields
                 .iter()
-                .flat_map(|field| emit_hir_typeref(trap, field))
+                .map(|field| emit_hir_typeref(trap, field))
                 .collect();
-            Some(
-                trap.emit(generated::TupleTypeRepr {
-                    id: trap::TrapId::Star,
-                    fields,
-                })
-                .into(),
-            )
+
+            trap.emit(generated::TupleType {
+                id: trap::TrapId::Star,
+                fields,
+            })
+            .into()
         }
         TypeRef::RawPtr(type_ref, mutability) => {
-            let type_repr = emit_hir_typeref(trap, type_ref);
-            Some(
-                trap.emit(generated::PtrTypeRepr {
-                    id: trap::TrapId::Star,
-                    is_const: mutability.is_shared(),
-                    is_mut: mutability.is_mut(),
-                    type_repr,
-                })
-                .into(),
-            )
+            let type_ = emit_hir_typeref(trap, type_ref);
+
+            trap.emit(generated::RawPtrType {
+                id: trap::TrapId::Star,
+                is_mut: mutability.is_mut(),
+                type_,
+            })
+            .into()
         }
         TypeRef::Reference(type_ref, lifetime_ref, mutability) => {
-            let type_repr = emit_hir_typeref(trap, type_ref);
-            let lifetime = lifetime_ref.as_ref().map(|x| {
-                trap.emit(generated::Lifetime {
-                    id: trap::TrapId::Star,
-                    text: Some(x.name.as_str().to_owned()),
-                })
-            });
-            Some(
-                trap.emit(generated::RefTypeRepr {
-                    id: trap::TrapId::Star,
-                    is_mut: mutability.is_mut(),
-                    type_repr,
-                    lifetime,
-                })
-                .into(),
-            )
+            let type_ = emit_hir_typeref(trap, type_ref);
+            let lifetime = lifetime_ref.as_ref().map(|x|x.name.as_str().to_owned());
+            trap.emit(generated::ReferenceType {
+                id: trap::TrapId::Star,
+                is_mut: mutability.is_mut(),
+                type_,
+                lifetime,
+            })
+            .into()
         }
         TypeRef::Array(type_ref, _const_ref) => {
-            let element_type_repr = emit_hir_typeref(trap, type_ref);
+            let type_ = emit_hir_typeref(trap, type_ref);
             // TODO: handle array size constant
-            let const_arg = None;
-            Some(
-                trap.emit(generated::ArrayTypeRepr {
-                    id: trap::TrapId::Star,
-                    element_type_repr,
-                    const_arg,
-                })
-                .into(),
-            )
+            trap.emit(generated::ArrayType {
+                id: trap::TrapId::Star,
+                type_,
+            })
+            .into()
         }
         TypeRef::Slice(type_ref) => {
-            let type_repr = emit_hir_typeref(trap, type_ref);
-            Some(
-                trap.emit(generated::SliceTypeRepr {
-                    id: trap::TrapId::Star,
-                    type_repr,
-                })
-                .into(),
-            )
+            let type_ = emit_hir_typeref(trap, type_ref);
+            trap.emit(generated::SliceType {
+                id: trap::TrapId::Star,
+                type_,
+            })
+            .into()
         }
         TypeRef::Fn(params, _, is_unsafe, _symbol) => {
             let (ret_type, params) = params.split_last().unwrap();
             let params: Vec<_> = params.as_ref().iter().map(|x| &x.1).collect();
-            Some(
-                emit_hir_fn(
-                    trap,
-                    None,
-                    &params[..],
-                    &ret_type.1,
-                    false,
-                    false,
-                    *is_unsafe,
-                )
-                .into(),
+            emit_hir_fn(
+                trap,
+                None,
+                &params[..],
+                &ret_type.1,
+                false,
+                false,
+                *is_unsafe,
             )
+            .into()
         }
         TypeRef::Path(path) => {
-            let path = Some(emit_hir_path(trap, path));
-
-            Some(
-                trap.emit(generated::PathTypeRepr {
-                    id: trap::TrapId::Star,
-                    path,
-                })
-                .into(),
-            )
+            let path = emit_hir_path(path);
+            trap.emit(generated::PathType {
+                id: trap::TrapId::Star,
+                path,
+            })
+            .into()
         }
-        TypeRef::ImplTrait(_) => None, // TODO handle impl
-        TypeRef::DynTrait(_) => None,  // TODO handle dyn
-        TypeRef::Macro(_) => None,
-        TypeRef::Error => None,
+        TypeRef::ImplTrait(_) | // TODO handle impl
+        TypeRef::DynTrait(_) |  // TODO handle dyn
+        TypeRef::Macro(_) |
+        TypeRef::Error =>  trap.emit(generated::ErrorType { id: trap::TrapId::Star,   })  .into(),
     }
 }
 
@@ -246,10 +173,9 @@ fn emit_variant_data(
             let mut types = Vec::new();
             let mut fields = Vec::new();
             for field in field_data.values() {
-                if let Some(tp) = emit_hir_typeref(trap, &field.type_ref) {
-                    fields.push(field.name.as_str().to_owned());
-                    types.push(tp);
-                }
+                let tp = emit_hir_typeref(trap, &field.type_ref);
+                fields.push(field.name.as_str().to_owned());
+                types.push(tp);
             }
             Some(trap.emit(generated::VariantData {
                 id: trap::TrapId::Star,
@@ -509,23 +435,21 @@ impl<'a> Extractor<'a> {
                             }
                             ModuleDefId::ConstId(konst) => {
                                 let konst = db.const_data(konst);
-                                if let Some(type_) = emit_hir_typeref(trap, &konst.type_ref) {
-                                    values.push(trap.emit(generated::ValueItem {
-                                        id: trap::TrapId::Star,
-                                        name: name.as_str().to_owned(),
-                                        type_,
-                                    }));
-                                }
+                                let type_ = emit_hir_typeref(trap, &konst.type_ref);
+                                values.push(trap.emit(generated::ValueItem {
+                                    id: trap::TrapId::Star,
+                                    name: name.as_str().to_owned(),
+                                    type_,
+                                }));
                             }
                             ModuleDefId::StaticId(statik) => {
                                 let statik = db.static_data(statik);
-                                if let Some(type_) = emit_hir_typeref(trap, &statik.type_ref) {
-                                    values.push(trap.emit(generated::ValueItem {
-                                        id: trap::TrapId::Star,
-                                        name: name.as_str().to_owned(),
-                                        type_,
-                                    }));
-                                }
+                                let type_ = emit_hir_typeref(trap, &statik.type_ref);
+                                values.push(trap.emit(generated::ValueItem {
+                                    id: trap::TrapId::Star,
+                                    name: name.as_str().to_owned(),
+                                    type_,
+                                }));
                             }
                             ModuleDefId::EnumVariantId(variant_id) => {
                                 let variant: Variant = variant_id.into();
@@ -548,7 +472,7 @@ impl<'a> Extractor<'a> {
                                 let variant_data = db.enum_variant_data(variant_id);
                                 let type_ = match variant_data.variant_data.as_ref() {
                                     ra_ap_hir_def::data::adt::VariantData::Unit => {
-                                        emit_hir_typeref(trap, &ret_type)
+                                        Some(emit_hir_typeref(trap, &ret_type))
                                     }
                                     ra_ap_hir_def::data::adt::VariantData::Tuple(arena) => {
                                         let params: Vec<_> =
