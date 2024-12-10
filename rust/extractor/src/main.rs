@@ -322,73 +322,80 @@ impl<'a> Extractor<'a> {
         // According to the documentation of `CrateGraph`:
         // Each crate is defined by the `FileId` of its root module, the set of enabled
         // `cfg` flags and the set of dependencies.
-        let mut crate_id_map = HashMap::<CrateId, (&VfsPath, u64)>::new();
+        let mut crate_id_map = HashMap::<CrateId, (PathBuf, u64)>::new();
         for krate_id in crate_graph.crates_in_topological_order() {
             let krate = &crate_graph[krate_id];
-            let root_module_file = vfs.file_path(krate.root_file_id);
-            let mut hasher = std::hash::DefaultHasher::new();
-            krate
-                .cfg_options
-                .as_ref()
-                .into_iter()
-                .sorted_by(cmp_flag)
-                .for_each(|x| format!("{x}").hash(&mut hasher));
-
-            krate
-                .dependencies
-                .iter()
-                .flat_map(|d| crate_id_map.get(&d.crate_id))
-                .sorted()
-                .for_each(|x| x.hash(&mut hasher));
-            let hash = hasher.finish();
-            crate_id_map.insert(krate_id, (root_module_file, hash));
-        }
-        for krate_id in crate_graph.iter() {
-            let (root_module_file, hash) = crate_id_map.get(&krate_id).unwrap();
-            let path: &Path = root_module_file.as_path().unwrap().as_ref();
-            let path = path.join(format!("{hash:0>16x}"));
-            let mut trap = self.traps.create("crates", path.as_path());
-            if trap.path.exists() {
-                continue;
-            }
-            let krate = &crate_graph[krate_id];
-            let element = generated::Crate {
-                id: trap::TrapId::Key(format!("crate:{root_module_file}:{hash}")),
-                name: krate
-                    .display_name
-                    .as_ref()
-                    .map(|x| x.canonical_name().to_string()),
-                version: krate.version.to_owned(),
-                cfg_options: krate
+            let root_module_file: &VfsPath = vfs.file_path(krate.root_file_id);
+            if let Some(root_module_file) = root_module_file
+                .as_path()
+                .map(|p| std::fs::canonicalize(p).unwrap_or(p.into()))
+            {
+                let mut hasher = std::hash::DefaultHasher::new();
+                krate
                     .cfg_options
                     .as_ref()
                     .into_iter()
-                    .map(|x| format!("{x}"))
-                    .collect(),
-                dependencies: krate
+                    .sorted_by(cmp_flag)
+                    .for_each(|x| format!("{x}").hash(&mut hasher));
+
+                krate
                     .dependencies
                     .iter()
-                    .flat_map(|x| crate_id_map.get(&x.crate_id))
-                    .map(|(module, hash)| trap.label(format!("crate:{module}:{hash}").into()))
-                    .collect(),
-            };
-            let parent = trap.emit(element);
+                    .flat_map(|d| crate_id_map.get(&d.crate_id))
+                    .sorted()
+                    .for_each(|x| x.hash(&mut hasher));
+                let hash = hasher.finish();
+                crate_id_map.insert(krate_id, (root_module_file, hash));
+            }
+        }
+        for krate_id in crate_graph.iter() {
+            if let Some((root_module_file, hash)) = crate_id_map.get(&krate_id) {
+                let path = root_module_file.join(format!("{hash:0>16x}"));
+                let mut trap = self.traps.create("crates", path.as_path());
+                if trap.path.exists() {
+                    continue;
+                }
+                let krate = &crate_graph[krate_id];
+                let element = generated::Crate {
+                    id: trap::TrapId::Key(format!("crate:{}:{hash}", root_module_file.display())),
+                    name: krate
+                        .display_name
+                        .as_ref()
+                        .map(|x| x.canonical_name().to_string()),
+                    version: krate.version.to_owned(),
+                    cfg_options: krate
+                        .cfg_options
+                        .as_ref()
+                        .into_iter()
+                        .map(|x| format!("{x}"))
+                        .collect(),
+                    dependencies: krate
+                        .dependencies
+                        .iter()
+                        .flat_map(|x| crate_id_map.get(&x.crate_id))
+                        .map(|(module, hash)| {
+                            trap.label(format!("crate:{}:{hash}", module.display()).into())
+                        })
+                        .collect(),
+                };
+                let parent = trap.emit(element);
 
-            go(
-                db,
-                db.crate_def_map(krate_id).as_ref(),
-                parent.into(),
-                "crate",
-                DefMap::ROOT,
-                &mut trap,
-            );
-            trap.commit().unwrap_or_else(|err| {
-                log::error!(
-                    "Failed to write trap file for crate: {}: {}",
-                    root_module_file,
-                    err.to_string()
-                )
-            });
+                go(
+                    db,
+                    db.crate_def_map(krate_id).as_ref(),
+                    parent.into(),
+                    "crate",
+                    DefMap::ROOT,
+                    &mut trap,
+                );
+                trap.commit().unwrap_or_else(|err| {
+                    log::error!(
+                        "Failed to write trap file for crate: {}: {}",
+                        root_module_file.display(),
+                        err.to_string()
+                    )
+                });
+            }
             fn go(
                 db: &dyn HirDatabase,
                 map: &DefMap,

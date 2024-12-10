@@ -189,7 +189,7 @@ fn from_utf8_lossy(v: &[u8]) -> (Cow<'_, str>, Option<SyntaxError>) {
     (Cow::Owned(res), Some(error))
 }
 
-fn canonicalize_if_on_windows(path: &Path) -> Option<PathBuf> {
+pub(crate) fn canonicalize_if_on_windows(path: &Path) -> Option<PathBuf> {
     if cfg!(windows) {
         dunce::canonicalize(path).ok()
     } else {
