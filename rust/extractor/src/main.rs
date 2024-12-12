@@ -10,7 +10,8 @@ use ra_ap_cfg::CfgAtom;
 use ra_ap_hir::db::{DefDatabase, HirDatabase};
 use ra_ap_hir::{DefMap, ModPath, ModuleDefId, Semantics, TypeRef, Variant};
 use ra_ap_hir_def::data::adt::VariantData;
-use ra_ap_hir_def::LocalModuleId;
+use ra_ap_hir_def::data::FunctionData;
+use ra_ap_hir_def::{AssocItemId, LocalModuleId};
 use ra_ap_ide_db::line_index::{LineCol, LineIndex};
 use ra_ap_ide_db::RootDatabase;
 use ra_ap_project_model::{CargoConfig, ProjectManifest};
@@ -40,6 +41,36 @@ struct Extractor<'a> {
     steps: Vec<ExtractionStep>,
 }
 
+fn emit_hir_type_bound(
+    trap: &mut TrapFile,
+    type_bound: &ra_ap_hir_def::type_ref::TypeBound,
+) -> Option<trap::Label<generated::TypeBoundType>> {
+    match type_bound {
+        ra_ap_hir_def::type_ref::TypeBound::Path(path, _) => Some(
+            trap.emit(generated::TraitTypeBound {
+                id: trap::TrapId::Star,
+                path: emit_hir_path(path),
+            })
+            .into(),
+        ),
+        ra_ap_hir_def::type_ref::TypeBound::ForLifetime(names, path) => Some(
+            trap.emit(generated::ForLifetimeTypeBound {
+                id: trap::TrapId::Star,
+                path: emit_hir_path(path),
+                names: names.into_iter().map(|x| x.as_str().to_owned()).collect(),
+            })
+            .into(),
+        ),
+        ra_ap_hir_def::type_ref::TypeBound::Lifetime(lifetime_ref) => Some(
+            trap.emit(generated::LifetimeTypeBound {
+                id: trap::TrapId::Star,
+                name: lifetime_ref.name.as_str().to_owned(),
+            })
+            .into(),
+        ),
+        ra_ap_hir_def::type_ref::TypeBound::Error => None,
+    }
+}
 fn emit_hir_path(path: &ra_ap_hir_def::path::Path) -> Vec<String> {
     path.segments()
         .iter()
@@ -70,6 +101,27 @@ fn emit_hir_fn(
         params,
         has_varargs: false,
     })
+}
+fn emit_hir_fn_data(
+    trap: &mut TrapFile,
+    function: &FunctionData,
+) -> trap::Label<generated::FunctionType> {
+    let params: Vec<_> = function.params.iter().map(|x| x.as_ref()).collect();
+    let (self_type, params) = if function.has_self_param() {
+        (Some(params[0]), &params[1..])
+    } else {
+        (None, &params[..])
+    };
+    let ret_type = function.ret_type.as_ref();
+    emit_hir_fn(
+        trap,
+        self_type,
+        params,
+        ret_type,
+        function.is_async(),
+        function.is_const(),
+        function.is_unsafe(),
+    )
 }
 fn emit_hir_typeref(trap: &mut TrapFile, ty: &TypeRef) -> trap::Label<generated::Type> {
     match ty {
@@ -109,7 +161,7 @@ fn emit_hir_typeref(trap: &mut TrapFile, ty: &TypeRef) -> trap::Label<generated:
         }
         TypeRef::Reference(type_ref, lifetime_ref, mutability) => {
             let type_ = emit_hir_typeref(trap, type_ref);
-            let lifetime = lifetime_ref.as_ref().map(|x|x.name.as_str().to_owned());
+            let lifetime = lifetime_ref.as_ref().map(|x| x.name.as_str().to_owned());
             trap.emit(generated::ReferenceType {
                 id: trap::TrapId::Star,
                 is_mut: mutability.is_mut(),
@@ -157,10 +209,33 @@ fn emit_hir_typeref(trap: &mut TrapFile, ty: &TypeRef) -> trap::Label<generated:
             })
             .into()
         }
-        TypeRef::ImplTrait(_) | // TODO handle impl
-        TypeRef::DynTrait(_) |  // TODO handle dyn
-        TypeRef::Macro(_) |
-        TypeRef::Error =>  trap.emit(generated::ErrorType { id: trap::TrapId::Star,   })  .into(),
+        TypeRef::ImplTrait(type_bounds) => {
+            let type_bounds = type_bounds
+                .iter()
+                .flat_map(|t| emit_hir_type_bound(trap, t))
+                .collect();
+            trap.emit(generated::ImplTraitType {
+                id: trap::TrapId::Star,
+                type_bounds,
+            })
+            .into()
+        }
+        TypeRef::DynTrait(type_bounds) => {
+            let type_bounds = type_bounds
+                .iter()
+                .flat_map(|t| emit_hir_type_bound(trap, t))
+                .collect();
+            trap.emit(generated::DynTraitType {
+                id: trap::TrapId::Star,
+                type_bounds,
+            })
+            .into()
+        }
+        TypeRef::Macro(_) | TypeRef::Error => trap
+            .emit(generated::ErrorType {
+                id: trap::TrapId::Star,
+            })
+            .into(),
     }
 }
 
@@ -415,25 +490,7 @@ impl<'a> Extractor<'a> {
                         match value {
                             ModuleDefId::FunctionId(function) => {
                                 let function = db.function_data(function);
-                                let params: Vec<_> =
-                                    function.params.iter().map(|x| x.as_ref()).collect();
-                                let (self_type, params) = if function.has_self_param() {
-                                    (Some(params[0]), &params[1..])
-                                } else {
-                                    (None, &params[..])
-                                };
-                                let ret_type = function.ret_type.as_ref();
-                                let type_ = emit_hir_fn(
-                                    trap,
-                                    self_type,
-                                    params,
-                                    ret_type,
-                                    function.is_async(),
-                                    function.is_const(),
-                                    function.is_unsafe(),
-                                )
-                                .into();
-
+                                let type_ = emit_hir_fn_data(trap, &function).into();
                                 values.push(trap.emit(generated::ValueItem {
                                     id: trap::TrapId::Star,
                                     name: name.as_str().to_owned(),
@@ -570,6 +627,29 @@ impl<'a> Extractor<'a> {
                                     );
                                 }
                             }
+                        }
+                        if let ModuleDefId::TraitId(trait_id) = type_id {
+                            let data = db.trait_data(trait_id);
+                            let mut method_names = Vec::new();
+                            let mut method_types = Vec::new();
+                            for (name, item) in &data.items {
+                                if let AssocItemId::FunctionId(function) = item {
+                                    method_names.push(name.as_str().to_owned());
+                                    let function = db.function_data(*function);
+                                    let method_type = emit_hir_fn_data(trap, &function);
+                                    method_types.push(method_type);
+                                };
+                            }
+
+                            types.push(
+                                trap.emit(generated::TraitItem {
+                                    id: trap::TrapId::Star,
+                                    name: name.as_str().to_owned(),
+                                    method_names,
+                                    method_types,
+                                })
+                                .into(),
+                            );
                         }
                     }
                 }
