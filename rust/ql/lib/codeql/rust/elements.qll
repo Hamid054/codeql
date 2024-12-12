@@ -51,6 +51,7 @@ import codeql.rust.elements.ConstParam
 import codeql.rust.elements.ContinueExpr
 import codeql.rust.elements.Crate
 import codeql.rust.elements.CrateModule
+import codeql.rust.elements.DynTraitType
 import codeql.rust.elements.DynTraitTypeRepr
 import codeql.rust.elements.Element
 import codeql.rust.elements.Enum
@@ -67,6 +68,7 @@ import codeql.rust.elements.FieldExpr
 import codeql.rust.elements.FieldList
 import codeql.rust.elements.FnPtrTypeRepr
 import codeql.rust.elements.ForExpr
+import codeql.rust.elements.ForLifetimeTypeBound
 import codeql.rust.elements.ForTypeRepr
 import codeql.rust.elements.Format
 import codeql.rust.elements.FormatArgsArg
@@ -82,6 +84,7 @@ import codeql.rust.elements.GenericParamList
 import codeql.rust.elements.IdentPat
 import codeql.rust.elements.IfExpr
 import codeql.rust.elements.Impl
+import codeql.rust.elements.ImplTraitType
 import codeql.rust.elements.ImplTraitTypeRepr
 import codeql.rust.elements.IndexExpr
 import codeql.rust.elements.InferTypeRepr
@@ -95,6 +98,7 @@ import codeql.rust.elements.LetStmt
 import codeql.rust.elements.Lifetime
 import codeql.rust.elements.LifetimeArg
 import codeql.rust.elements.LifetimeParam
+import codeql.rust.elements.LifetimeTypeBound
 import codeql.rust.elements.LiteralExpr
 import codeql.rust.elements.LiteralPat
 import codeql.rust.elements.Locatable
@@ -177,6 +181,8 @@ import codeql.rust.elements.Token
 import codeql.rust.elements.TokenTree
 import codeql.rust.elements.Trait
 import codeql.rust.elements.TraitAlias
+import codeql.rust.elements.TraitItem
+import codeql.rust.elements.TraitTypeBound
 import codeql.rust.elements.TryExpr
 import codeql.rust.elements.TupleExpr
 import codeql.rust.elements.TupleField
@@ -190,6 +196,7 @@ import codeql.rust.elements.TypeAlias
 import codeql.rust.elements.TypeArg
 import codeql.rust.elements.TypeBound
 import codeql.rust.elements.TypeBoundList
+import codeql.rust.elements.TypeBoundType
 import codeql.rust.elements.TypeItem
 import codeql.rust.elements.TypeParam
 import codeql.rust.elements.TypeRepr

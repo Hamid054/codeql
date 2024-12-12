@@ -125,6 +125,7 @@ locatable_locations(
 | @locatable
 | @module_container
 | @type
+| @type_bound_type
 | @type_item
 | @unextracted
 | @value_item
@@ -160,8 +161,10 @@ extractor_steps(
 
 @type =
   @array_type
+| @dyn_trait_type
 | @error_type
 | @function_type
+| @impl_trait_type
 | @never_type
 | @path_type
 | @placeholder_type
@@ -171,9 +174,16 @@ extractor_steps(
 | @tuple_type
 ;
 
+@type_bound_type =
+  @for_lifetime_type_bound
+| @lifetime_type_bound
+| @trait_type_bound
+;
+
 @type_item =
   @enum_item
 | @struct_item
+| @trait_item
 ;
 
 @unextracted =
@@ -333,6 +343,17 @@ crate_module_types(
   int type_: @type_item ref
 );
 
+dyn_trait_types(
+  unique int id: @dyn_trait_type
+);
+
+#keyset[id, index]
+dyn_trait_type_type_bounds(
+  int id: @dyn_trait_type ref,
+  int index: int ref,
+  int type_bound: @type_bound_type ref
+);
+
 enum_items(
   unique int id: @enum_item,
   string name: string ref
@@ -347,6 +368,24 @@ enum_item_variants(
 
 error_types(
   unique int id: @error_type
+);
+
+for_lifetime_type_bounds(
+  unique int id: @for_lifetime_type_bound
+);
+
+#keyset[id, index]
+for_lifetime_type_bound_names(
+  int id: @for_lifetime_type_bound ref,
+  int index: int ref,
+  string name: string ref
+);
+
+#keyset[id, index]
+for_lifetime_type_bound_paths(
+  int id: @for_lifetime_type_bound ref,
+  int index: int ref,
+  string path: string ref
 );
 
 function_types(
@@ -385,6 +424,22 @@ function_type_is_unsafe(
 #keyset[id]
 function_type_has_varargs(
   int id: @function_type ref
+);
+
+impl_trait_types(
+  unique int id: @impl_trait_type
+);
+
+#keyset[id, index]
+impl_trait_type_type_bounds(
+  int id: @impl_trait_type ref,
+  int index: int ref,
+  int type_bound: @type_bound_type ref
+);
+
+lifetime_type_bounds(
+  unique int id: @lifetime_type_bound,
+  string name: string ref
 );
 
 missings(
@@ -455,6 +510,36 @@ struct_item_contents(
 #keyset[id]
 struct_item_is_union(
   int id: @struct_item ref
+);
+
+trait_items(
+  unique int id: @trait_item,
+  string name: string ref
+);
+
+#keyset[id, index]
+trait_item_method_names(
+  int id: @trait_item ref,
+  int index: int ref,
+  string method_name: string ref
+);
+
+#keyset[id, index]
+trait_item_method_types(
+  int id: @trait_item ref,
+  int index: int ref,
+  int method_type: @function_type ref
+);
+
+trait_type_bounds(
+  unique int id: @trait_type_bound
+);
+
+#keyset[id, index]
+trait_type_bound_paths(
+  int id: @trait_type_bound ref,
+  int index: int ref,
+  string path: string ref
 );
 
 tuple_types(

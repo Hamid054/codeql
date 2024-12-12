@@ -48,6 +48,7 @@
 /lib/codeql/rust/elements/ContinueExpr.qll linguist-generated
 /lib/codeql/rust/elements/Crate.qll linguist-generated
 /lib/codeql/rust/elements/CrateModule.qll linguist-generated
+/lib/codeql/rust/elements/DynTraitType.qll linguist-generated
 /lib/codeql/rust/elements/DynTraitTypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/Element.qll linguist-generated
 /lib/codeql/rust/elements/Enum.qll linguist-generated
@@ -64,6 +65,7 @@
 /lib/codeql/rust/elements/FieldList.qll linguist-generated
 /lib/codeql/rust/elements/FnPtrTypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/ForExpr.qll linguist-generated
+/lib/codeql/rust/elements/ForLifetimeTypeBound.qll linguist-generated
 /lib/codeql/rust/elements/ForTypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/Format.qll linguist-generated
 /lib/codeql/rust/elements/FormatArgsArg.qll linguist-generated
@@ -79,6 +81,7 @@
 /lib/codeql/rust/elements/IdentPat.qll linguist-generated
 /lib/codeql/rust/elements/IfExpr.qll linguist-generated
 /lib/codeql/rust/elements/Impl.qll linguist-generated
+/lib/codeql/rust/elements/ImplTraitType.qll linguist-generated
 /lib/codeql/rust/elements/ImplTraitTypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/IndexExpr.qll linguist-generated
 /lib/codeql/rust/elements/InferTypeRepr.qll linguist-generated
@@ -92,6 +95,7 @@
 /lib/codeql/rust/elements/Lifetime.qll linguist-generated
 /lib/codeql/rust/elements/LifetimeArg.qll linguist-generated
 /lib/codeql/rust/elements/LifetimeParam.qll linguist-generated
+/lib/codeql/rust/elements/LifetimeTypeBound.qll linguist-generated
 /lib/codeql/rust/elements/LiteralExpr.qll linguist-generated
 /lib/codeql/rust/elements/LiteralPat.qll linguist-generated
 /lib/codeql/rust/elements/Locatable.qll linguist-generated
@@ -174,6 +178,8 @@
 /lib/codeql/rust/elements/TokenTree.qll linguist-generated
 /lib/codeql/rust/elements/Trait.qll linguist-generated
 /lib/codeql/rust/elements/TraitAlias.qll linguist-generated
+/lib/codeql/rust/elements/TraitItem.qll linguist-generated
+/lib/codeql/rust/elements/TraitTypeBound.qll linguist-generated
 /lib/codeql/rust/elements/TryExpr.qll linguist-generated
 /lib/codeql/rust/elements/TupleExpr.qll linguist-generated
 /lib/codeql/rust/elements/TupleField.qll linguist-generated
@@ -187,6 +193,7 @@
 /lib/codeql/rust/elements/TypeArg.qll linguist-generated
 /lib/codeql/rust/elements/TypeBound.qll linguist-generated
 /lib/codeql/rust/elements/TypeBoundList.qll linguist-generated
+/lib/codeql/rust/elements/TypeBoundType.qll linguist-generated
 /lib/codeql/rust/elements/TypeItem.qll linguist-generated
 /lib/codeql/rust/elements/TypeParam.qll linguist-generated
 /lib/codeql/rust/elements/TypeRepr.qll linguist-generated
@@ -282,6 +289,8 @@
 /lib/codeql/rust/elements/internal/CrateImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/CrateModuleConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/CrateModuleImpl.qll linguist-generated
+/lib/codeql/rust/elements/internal/DynTraitTypeConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/DynTraitTypeImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/DynTraitTypeReprConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/DynTraitTypeReprImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/EnumConstructor.qll linguist-generated
@@ -308,6 +317,8 @@
 /lib/codeql/rust/elements/internal/FnPtrTypeReprConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/FnPtrTypeReprImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/ForExprConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/ForLifetimeTypeBoundConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/ForLifetimeTypeBoundImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/ForTypeReprConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/ForTypeReprImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/FormatArgsArgConstructor.qll linguist-generated
@@ -324,6 +335,8 @@
 /lib/codeql/rust/elements/internal/IdentPatConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/IfExprConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/ImplConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/ImplTraitTypeConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/ImplTraitTypeImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/ImplTraitTypeReprConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/ImplTraitTypeReprImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/IndexExprConstructor.qll linguist-generated
@@ -340,6 +353,8 @@
 /lib/codeql/rust/elements/internal/LifetimeConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/LifetimeParamConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/LifetimeParamImpl.qll linguist-generated
+/lib/codeql/rust/elements/internal/LifetimeTypeBoundConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/LifetimeTypeBoundImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/LiteralExprConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/LiteralPatConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/LoopExprConstructor.qll linguist-generated
@@ -459,6 +474,10 @@
 /lib/codeql/rust/elements/internal/TraitAliasConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/TraitAliasImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/TraitConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/TraitItemConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/TraitItemImpl.qll linguist-generated
+/lib/codeql/rust/elements/internal/TraitTypeBoundConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/TraitTypeBoundImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/TryExprConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/TryExprImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/TupleExprConstructor.qll linguist-generated
@@ -482,6 +501,7 @@
 /lib/codeql/rust/elements/internal/TypeBoundImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/TypeBoundListConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/TypeBoundListImpl.qll linguist-generated
+/lib/codeql/rust/elements/internal/TypeBoundTypeImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/TypeImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/TypeItemImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/TypeParamConstructor.qll linguist-generated
@@ -568,6 +588,7 @@
 /lib/codeql/rust/elements/internal/generated/ContinueExpr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Crate.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/CrateModule.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/DynTraitType.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/DynTraitTypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Element.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Enum.qll linguist-generated
@@ -585,6 +606,7 @@
 /lib/codeql/rust/elements/internal/generated/FieldList.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/FnPtrTypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/ForExpr.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/ForLifetimeTypeBound.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/ForTypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Format.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/FormatArgsArg.qll linguist-generated
@@ -600,6 +622,7 @@
 /lib/codeql/rust/elements/internal/generated/IdentPat.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/IfExpr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Impl.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/ImplTraitType.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/ImplTraitTypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/IndexExpr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/InferTypeRepr.qll linguist-generated
@@ -613,6 +636,7 @@
 /lib/codeql/rust/elements/internal/generated/Lifetime.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/LifetimeArg.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/LifetimeParam.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/LifetimeTypeBound.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/LiteralExpr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/LiteralPat.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Locatable.qll linguist-generated
@@ -700,6 +724,8 @@
 /lib/codeql/rust/elements/internal/generated/TokenTree.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Trait.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/TraitAlias.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/TraitItem.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/TraitTypeBound.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/TryExpr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/TupleExpr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/TupleField.qll linguist-generated
@@ -713,6 +739,7 @@
 /lib/codeql/rust/elements/internal/generated/TypeArg.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/TypeBound.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/TypeBoundList.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/TypeBoundType.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/TypeItem.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/TypeParam.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/TypeRepr.qll linguist-generated
@@ -837,6 +864,7 @@
 /test/extractor-tests/generated/ContinueExpr/ContinueExpr_getLifetime.ql linguist-generated
 /test/extractor-tests/generated/Crate/MISSING_SOURCE.txt linguist-generated
 /test/extractor-tests/generated/CrateModule/MISSING_SOURCE.txt linguist-generated
+/test/extractor-tests/generated/DynTraitType/MISSING_SOURCE.txt linguist-generated
 /test/extractor-tests/generated/DynTraitTypeRepr/DynTraitTypeRepr.ql linguist-generated
 /test/extractor-tests/generated/DynTraitTypeRepr/DynTraitTypeRepr_getTypeBoundList.ql linguist-generated
 /test/extractor-tests/generated/Enum/Enum.ql linguist-generated
@@ -883,6 +911,7 @@
 /test/extractor-tests/generated/ForExpr/ForExpr_getLabel.ql linguist-generated
 /test/extractor-tests/generated/ForExpr/ForExpr_getLoopBody.ql linguist-generated
 /test/extractor-tests/generated/ForExpr/ForExpr_getPat.ql linguist-generated
+/test/extractor-tests/generated/ForLifetimeTypeBound/MISSING_SOURCE.txt linguist-generated
 /test/extractor-tests/generated/ForTypeRepr/ForTypeRepr.ql linguist-generated
 /test/extractor-tests/generated/ForTypeRepr/ForTypeRepr_getGenericParamList.ql linguist-generated
 /test/extractor-tests/generated/ForTypeRepr/ForTypeRepr_getTypeRepr.ql linguist-generated
@@ -935,6 +964,7 @@
 /test/extractor-tests/generated/Impl/Impl_getTrait.ql linguist-generated
 /test/extractor-tests/generated/Impl/Impl_getVisibility.ql linguist-generated
 /test/extractor-tests/generated/Impl/Impl_getWhereClause.ql linguist-generated
+/test/extractor-tests/generated/ImplTraitType/MISSING_SOURCE.txt linguist-generated
 /test/extractor-tests/generated/ImplTraitTypeRepr/ImplTraitTypeRepr.ql linguist-generated
 /test/extractor-tests/generated/ImplTraitTypeRepr/ImplTraitTypeRepr_getTypeBoundList.ql linguist-generated
 /test/extractor-tests/generated/IndexExpr/IndexExpr.ql linguist-generated
@@ -967,6 +997,7 @@
 /test/extractor-tests/generated/LifetimeParam/LifetimeParam_getAttr.ql linguist-generated
 /test/extractor-tests/generated/LifetimeParam/LifetimeParam_getLifetime.ql linguist-generated
 /test/extractor-tests/generated/LifetimeParam/LifetimeParam_getTypeBoundList.ql linguist-generated
+/test/extractor-tests/generated/LifetimeTypeBound/MISSING_SOURCE.txt linguist-generated
 /test/extractor-tests/generated/LiteralExpr/LiteralExpr.ql linguist-generated
 /test/extractor-tests/generated/LiteralExpr/LiteralExpr_getAttr.ql linguist-generated
 /test/extractor-tests/generated/LiteralExpr/LiteralExpr_getTextValue.ql linguist-generated
@@ -1218,6 +1249,8 @@
 /test/extractor-tests/generated/TraitAlias/TraitAlias_getTypeBoundList.ql linguist-generated
 /test/extractor-tests/generated/TraitAlias/TraitAlias_getVisibility.ql linguist-generated
 /test/extractor-tests/generated/TraitAlias/TraitAlias_getWhereClause.ql linguist-generated
+/test/extractor-tests/generated/TraitItem/MISSING_SOURCE.txt linguist-generated
+/test/extractor-tests/generated/TraitTypeBound/MISSING_SOURCE.txt linguist-generated
 /test/extractor-tests/generated/TryExpr/TryExpr.ql linguist-generated
 /test/extractor-tests/generated/TryExpr/TryExpr_getAttr.ql linguist-generated
 /test/extractor-tests/generated/TryExpr/TryExpr_getExpr.ql linguist-generated

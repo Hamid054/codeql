@@ -43,6 +43,7 @@ import codeql.rust.elements.internal.ConstParamConstructor
 import codeql.rust.elements.internal.ContinueExprConstructor
 import codeql.rust.elements.internal.CrateConstructor
 import codeql.rust.elements.internal.CrateModuleConstructor
+import codeql.rust.elements.internal.DynTraitTypeConstructor
 import codeql.rust.elements.internal.DynTraitTypeReprConstructor
 import codeql.rust.elements.internal.EnumConstructor
 import codeql.rust.elements.internal.EnumItemConstructor
@@ -56,6 +57,7 @@ import codeql.rust.elements.internal.ExtractorStepConstructor
 import codeql.rust.elements.internal.FieldExprConstructor
 import codeql.rust.elements.internal.FnPtrTypeReprConstructor
 import codeql.rust.elements.internal.ForExprConstructor
+import codeql.rust.elements.internal.ForLifetimeTypeBoundConstructor
 import codeql.rust.elements.internal.ForTypeReprConstructor
 import codeql.rust.elements.internal.FormatConstructor
 import codeql.rust.elements.internal.FormatArgsArgConstructor
@@ -69,6 +71,7 @@ import codeql.rust.elements.internal.GenericParamListConstructor
 import codeql.rust.elements.internal.IdentPatConstructor
 import codeql.rust.elements.internal.IfExprConstructor
 import codeql.rust.elements.internal.ImplConstructor
+import codeql.rust.elements.internal.ImplTraitTypeConstructor
 import codeql.rust.elements.internal.ImplTraitTypeReprConstructor
 import codeql.rust.elements.internal.IndexExprConstructor
 import codeql.rust.elements.internal.InferTypeReprConstructor
@@ -80,6 +83,7 @@ import codeql.rust.elements.internal.LetStmtConstructor
 import codeql.rust.elements.internal.LifetimeConstructor
 import codeql.rust.elements.internal.LifetimeArgConstructor
 import codeql.rust.elements.internal.LifetimeParamConstructor
+import codeql.rust.elements.internal.LifetimeTypeBoundConstructor
 import codeql.rust.elements.internal.LiteralExprConstructor
 import codeql.rust.elements.internal.LiteralPatConstructor
 import codeql.rust.elements.internal.LoopExprConstructor
@@ -152,6 +156,8 @@ import codeql.rust.elements.internal.StructItemConstructor
 import codeql.rust.elements.internal.TokenTreeConstructor
 import codeql.rust.elements.internal.TraitConstructor
 import codeql.rust.elements.internal.TraitAliasConstructor
+import codeql.rust.elements.internal.TraitItemConstructor
+import codeql.rust.elements.internal.TraitTypeBoundConstructor
 import codeql.rust.elements.internal.TryExprConstructor
 import codeql.rust.elements.internal.TupleExprConstructor
 import codeql.rust.elements.internal.TupleFieldConstructor

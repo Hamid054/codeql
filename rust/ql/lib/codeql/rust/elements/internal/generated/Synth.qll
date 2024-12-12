@@ -177,6 +177,10 @@ module Synth {
     /**
      * INTERNAL: Do not use.
      */
+    TDynTraitType(Raw::DynTraitType id) { constructDynTraitType(id) } or
+    /**
+     * INTERNAL: Do not use.
+     */
     TDynTraitTypeRepr(Raw::DynTraitTypeRepr id) { constructDynTraitTypeRepr(id) } or
     /**
      * INTERNAL: Do not use.
@@ -226,6 +230,10 @@ module Synth {
      * INTERNAL: Do not use.
      */
     TForExpr(Raw::ForExpr id) { constructForExpr(id) } or
+    /**
+     * INTERNAL: Do not use.
+     */
+    TForLifetimeTypeBound(Raw::ForLifetimeTypeBound id) { constructForLifetimeTypeBound(id) } or
     /**
      * INTERNAL: Do not use.
      */
@@ -289,6 +297,10 @@ module Synth {
     /**
      * INTERNAL: Do not use.
      */
+    TImplTraitType(Raw::ImplTraitType id) { constructImplTraitType(id) } or
+    /**
+     * INTERNAL: Do not use.
+     */
     TImplTraitTypeRepr(Raw::ImplTraitTypeRepr id) { constructImplTraitTypeRepr(id) } or
     /**
      * INTERNAL: Do not use.
@@ -330,6 +342,10 @@ module Synth {
      * INTERNAL: Do not use.
      */
     TLifetimeParam(Raw::LifetimeParam id) { constructLifetimeParam(id) } or
+    /**
+     * INTERNAL: Do not use.
+     */
+    TLifetimeTypeBound(Raw::LifetimeTypeBound id) { constructLifetimeTypeBound(id) } or
     /**
      * INTERNAL: Do not use.
      */
@@ -621,6 +637,14 @@ module Synth {
     /**
      * INTERNAL: Do not use.
      */
+    TTraitItem(Raw::TraitItem id) { constructTraitItem(id) } or
+    /**
+     * INTERNAL: Do not use.
+     */
+    TTraitTypeBound(Raw::TraitTypeBound id) { constructTraitTypeBound(id) } or
+    /**
+     * INTERNAL: Do not use.
+     */
     TTryExpr(Raw::TryExpr id) { constructTryExpr(id) } or
     /**
      * INTERNAL: Do not use.
@@ -896,13 +920,18 @@ module Synth {
    * INTERNAL: Do not use.
    */
   class TType =
-    TArrayType or TErrorType or TFunctionType or TNeverType or TPathType or TPlaceholderType or
-        TRawPtrType or TReferenceType or TSliceType or TTupleType;
+    TArrayType or TDynTraitType or TErrorType or TFunctionType or TImplTraitType or TNeverType or
+        TPathType or TPlaceholderType or TRawPtrType or TReferenceType or TSliceType or TTupleType;
 
   /**
    * INTERNAL: Do not use.
    */
-  class TTypeItem = TEnumItem or TStructItem;
+  class TTypeBoundType = TForLifetimeTypeBound or TLifetimeTypeBound or TTraitTypeBound;
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class TTypeItem = TEnumItem or TStructItem or TTraitItem;
 
   /**
    * INTERNAL: Do not use.
@@ -1166,6 +1195,12 @@ module Synth {
 
   /**
    * INTERNAL: Do not use.
+   * Converts a raw element to a synthesized `TDynTraitType`, if possible.
+   */
+  TDynTraitType convertDynTraitTypeFromRaw(Raw::Element e) { result = TDynTraitType(e) }
+
+  /**
+   * INTERNAL: Do not use.
    * Converts a raw element to a synthesized `TDynTraitTypeRepr`, if possible.
    */
   TDynTraitTypeRepr convertDynTraitTypeReprFromRaw(Raw::Element e) { result = TDynTraitTypeRepr(e) }
@@ -1241,6 +1276,14 @@ module Synth {
    * Converts a raw element to a synthesized `TForExpr`, if possible.
    */
   TForExpr convertForExprFromRaw(Raw::Element e) { result = TForExpr(e) }
+
+  /**
+   * INTERNAL: Do not use.
+   * Converts a raw element to a synthesized `TForLifetimeTypeBound`, if possible.
+   */
+  TForLifetimeTypeBound convertForLifetimeTypeBoundFromRaw(Raw::Element e) {
+    result = TForLifetimeTypeBound(e)
+  }
 
   /**
    * INTERNAL: Do not use.
@@ -1324,6 +1367,12 @@ module Synth {
 
   /**
    * INTERNAL: Do not use.
+   * Converts a raw element to a synthesized `TImplTraitType`, if possible.
+   */
+  TImplTraitType convertImplTraitTypeFromRaw(Raw::Element e) { result = TImplTraitType(e) }
+
+  /**
+   * INTERNAL: Do not use.
    * Converts a raw element to a synthesized `TImplTraitTypeRepr`, if possible.
    */
   TImplTraitTypeRepr convertImplTraitTypeReprFromRaw(Raw::Element e) {
@@ -1389,6 +1438,14 @@ module Synth {
    * Converts a raw element to a synthesized `TLifetimeParam`, if possible.
    */
   TLifetimeParam convertLifetimeParamFromRaw(Raw::Element e) { result = TLifetimeParam(e) }
+
+  /**
+   * INTERNAL: Do not use.
+   * Converts a raw element to a synthesized `TLifetimeTypeBound`, if possible.
+   */
+  TLifetimeTypeBound convertLifetimeTypeBoundFromRaw(Raw::Element e) {
+    result = TLifetimeTypeBound(e)
+  }
 
   /**
    * INTERNAL: Do not use.
@@ -1830,6 +1887,18 @@ module Synth {
 
   /**
    * INTERNAL: Do not use.
+   * Converts a raw element to a synthesized `TTraitItem`, if possible.
+   */
+  TTraitItem convertTraitItemFromRaw(Raw::Element e) { result = TTraitItem(e) }
+
+  /**
+   * INTERNAL: Do not use.
+   * Converts a raw element to a synthesized `TTraitTypeBound`, if possible.
+   */
+  TTraitTypeBound convertTraitTypeBoundFromRaw(Raw::Element e) { result = TTraitTypeBound(e) }
+
+  /**
+   * INTERNAL: Do not use.
    * Converts a raw element to a synthesized `TTryExpr`, if possible.
    */
   TTryExpr convertTryExprFromRaw(Raw::Element e) { result = TTryExpr(e) }
@@ -2247,6 +2316,8 @@ module Synth {
     or
     result = convertTypeFromRaw(e)
     or
+    result = convertTypeBoundTypeFromRaw(e)
+    or
     result = convertTypeItemFromRaw(e)
     or
     result = convertUnextractedFromRaw(e)
@@ -2571,9 +2642,13 @@ module Synth {
   TType convertTypeFromRaw(Raw::Element e) {
     result = convertArrayTypeFromRaw(e)
     or
+    result = convertDynTraitTypeFromRaw(e)
+    or
     result = convertErrorTypeFromRaw(e)
     or
     result = convertFunctionTypeFromRaw(e)
+    or
+    result = convertImplTraitTypeFromRaw(e)
     or
     result = convertNeverTypeFromRaw(e)
     or
@@ -2592,12 +2667,26 @@ module Synth {
 
   /**
    * INTERNAL: Do not use.
+   * Converts a raw DB element to a synthesized `TTypeBoundType`, if possible.
+   */
+  TTypeBoundType convertTypeBoundTypeFromRaw(Raw::Element e) {
+    result = convertForLifetimeTypeBoundFromRaw(e)
+    or
+    result = convertLifetimeTypeBoundFromRaw(e)
+    or
+    result = convertTraitTypeBoundFromRaw(e)
+  }
+
+  /**
+   * INTERNAL: Do not use.
    * Converts a raw DB element to a synthesized `TTypeItem`, if possible.
    */
   TTypeItem convertTypeItemFromRaw(Raw::Element e) {
     result = convertEnumItemFromRaw(e)
     or
     result = convertStructItemFromRaw(e)
+    or
+    result = convertTraitItemFromRaw(e)
   }
 
   /**
@@ -2898,6 +2987,12 @@ module Synth {
 
   /**
    * INTERNAL: Do not use.
+   * Converts a synthesized `TDynTraitType` to a raw DB element, if possible.
+   */
+  Raw::Element convertDynTraitTypeToRaw(TDynTraitType e) { e = TDynTraitType(result) }
+
+  /**
+   * INTERNAL: Do not use.
    * Converts a synthesized `TDynTraitTypeRepr` to a raw DB element, if possible.
    */
   Raw::Element convertDynTraitTypeReprToRaw(TDynTraitTypeRepr e) { e = TDynTraitTypeRepr(result) }
@@ -2973,6 +3068,14 @@ module Synth {
    * Converts a synthesized `TForExpr` to a raw DB element, if possible.
    */
   Raw::Element convertForExprToRaw(TForExpr e) { e = TForExpr(result) }
+
+  /**
+   * INTERNAL: Do not use.
+   * Converts a synthesized `TForLifetimeTypeBound` to a raw DB element, if possible.
+   */
+  Raw::Element convertForLifetimeTypeBoundToRaw(TForLifetimeTypeBound e) {
+    e = TForLifetimeTypeBound(result)
+  }
 
   /**
    * INTERNAL: Do not use.
@@ -3054,6 +3157,12 @@ module Synth {
 
   /**
    * INTERNAL: Do not use.
+   * Converts a synthesized `TImplTraitType` to a raw DB element, if possible.
+   */
+  Raw::Element convertImplTraitTypeToRaw(TImplTraitType e) { e = TImplTraitType(result) }
+
+  /**
+   * INTERNAL: Do not use.
    * Converts a synthesized `TImplTraitTypeRepr` to a raw DB element, if possible.
    */
   Raw::Element convertImplTraitTypeReprToRaw(TImplTraitTypeRepr e) {
@@ -3119,6 +3228,14 @@ module Synth {
    * Converts a synthesized `TLifetimeParam` to a raw DB element, if possible.
    */
   Raw::Element convertLifetimeParamToRaw(TLifetimeParam e) { e = TLifetimeParam(result) }
+
+  /**
+   * INTERNAL: Do not use.
+   * Converts a synthesized `TLifetimeTypeBound` to a raw DB element, if possible.
+   */
+  Raw::Element convertLifetimeTypeBoundToRaw(TLifetimeTypeBound e) {
+    e = TLifetimeTypeBound(result)
+  }
 
   /**
    * INTERNAL: Do not use.
@@ -3560,6 +3677,18 @@ module Synth {
 
   /**
    * INTERNAL: Do not use.
+   * Converts a synthesized `TTraitItem` to a raw DB element, if possible.
+   */
+  Raw::Element convertTraitItemToRaw(TTraitItem e) { e = TTraitItem(result) }
+
+  /**
+   * INTERNAL: Do not use.
+   * Converts a synthesized `TTraitTypeBound` to a raw DB element, if possible.
+   */
+  Raw::Element convertTraitTypeBoundToRaw(TTraitTypeBound e) { e = TTraitTypeBound(result) }
+
+  /**
+   * INTERNAL: Do not use.
    * Converts a synthesized `TTryExpr` to a raw DB element, if possible.
    */
   Raw::Element convertTryExprToRaw(TTryExpr e) { e = TTryExpr(result) }
@@ -3977,6 +4106,8 @@ module Synth {
     or
     result = convertTypeToRaw(e)
     or
+    result = convertTypeBoundTypeToRaw(e)
+    or
     result = convertTypeItemToRaw(e)
     or
     result = convertUnextractedToRaw(e)
@@ -4301,9 +4432,13 @@ module Synth {
   Raw::Element convertTypeToRaw(TType e) {
     result = convertArrayTypeToRaw(e)
     or
+    result = convertDynTraitTypeToRaw(e)
+    or
     result = convertErrorTypeToRaw(e)
     or
     result = convertFunctionTypeToRaw(e)
+    or
+    result = convertImplTraitTypeToRaw(e)
     or
     result = convertNeverTypeToRaw(e)
     or
@@ -4322,12 +4457,26 @@ module Synth {
 
   /**
    * INTERNAL: Do not use.
+   * Converts a synthesized `TTypeBoundType` to a raw DB element, if possible.
+   */
+  Raw::Element convertTypeBoundTypeToRaw(TTypeBoundType e) {
+    result = convertForLifetimeTypeBoundToRaw(e)
+    or
+    result = convertLifetimeTypeBoundToRaw(e)
+    or
+    result = convertTraitTypeBoundToRaw(e)
+  }
+
+  /**
+   * INTERNAL: Do not use.
    * Converts a synthesized `TTypeItem` to a raw DB element, if possible.
    */
   Raw::Element convertTypeItemToRaw(TTypeItem e) {
     result = convertEnumItemToRaw(e)
     or
     result = convertStructItemToRaw(e)
+    or
+    result = convertTraitItemToRaw(e)
   }
 
   /**

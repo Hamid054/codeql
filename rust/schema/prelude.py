@@ -162,6 +162,31 @@ class PathType(Type):
     path: list[string]
 
 
+class TypeBoundType(Element):
+    pass
+
+
+class TraitTypeBound(TypeBoundType):
+    path: list[string]
+
+
+class LifetimeTypeBound(TypeBoundType):
+    name: string
+
+
+class ForLifetimeTypeBound(TypeBoundType):
+    names: list[string]
+    path: list[string]
+
+
+class DynTraitType(Type):
+    type_bounds: list[TypeBoundType]
+
+
+class ImplTraitType(Type):
+    type_bounds: list[TypeBoundType]
+
+
 class ErrorType(Type):
     pass
 
@@ -194,6 +219,13 @@ class EnumVariant(Element):
 class EnumItem(TypeItem):
     name: string
     variants: list[EnumVariant]
+
+
+class TraitItem(TypeItem):
+    name: string
+    method_names: list[string]
+    method_types: list[FunctionType]
+    # TODO: type alias and constant items
 
 
 class ValueItem(Element):

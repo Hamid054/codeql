@@ -69,6 +69,11 @@ module Raw {
   /**
    * INTERNAL: Do not use.
    */
+  class TypeBoundType extends @type_bound_type, Element { }
+
+  /**
+   * INTERNAL: Do not use.
+   */
   class TypeItem extends @type_item, Element { }
 
   /**
@@ -193,6 +198,18 @@ module Raw {
   /**
    * INTERNAL: Do not use.
    */
+  class DynTraitType extends @dyn_trait_type, Type {
+    override string toString() { result = "DynTraitType" }
+
+    /**
+     * Gets the `index`th type bound of this dyn trait type (0-based).
+     */
+    TypeBoundType getTypeBound(int index) { dyn_trait_type_type_bounds(this, index, result) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
   class EnumItem extends @enum_item, TypeItem {
     override string toString() { result = "EnumItem" }
 
@@ -212,6 +229,23 @@ module Raw {
    */
   class ErrorType extends @error_type, Type {
     override string toString() { result = "ErrorType" }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class ForLifetimeTypeBound extends @for_lifetime_type_bound, TypeBoundType {
+    override string toString() { result = "ForLifetimeTypeBound" }
+
+    /**
+     * Gets the `index`th name of this for lifetime type bound (0-based).
+     */
+    string getName(int index) { for_lifetime_type_bound_names(this, index, result) }
+
+    /**
+     * Gets the `index`th path of this for lifetime type bound (0-based).
+     */
+    string getPath(int index) { for_lifetime_type_bound_paths(this, index, result) }
   }
 
   /**
@@ -254,6 +288,30 @@ module Raw {
      * Holds if this function type has varargs.
      */
     predicate hasVarargs() { function_type_has_varargs(this) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class ImplTraitType extends @impl_trait_type, Type {
+    override string toString() { result = "ImplTraitType" }
+
+    /**
+     * Gets the `index`th type bound of this impl trait type (0-based).
+     */
+    TypeBoundType getTypeBound(int index) { impl_trait_type_type_bounds(this, index, result) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class LifetimeTypeBound extends @lifetime_type_bound, TypeBoundType {
+    override string toString() { result = "LifetimeTypeBound" }
+
+    /**
+     * Gets the name of this lifetime type bound.
+     */
+    string getName() { lifetime_type_bounds(this, result) }
   }
 
   /**
@@ -361,6 +419,40 @@ module Raw {
      * Holds if this struct item is union.
      */
     predicate isUnion() { struct_item_is_union(this) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class TraitItem extends @trait_item, TypeItem {
+    override string toString() { result = "TraitItem" }
+
+    /**
+     * Gets the name of this trait item.
+     */
+    string getName() { trait_items(this, result) }
+
+    /**
+     * Gets the `index`th method name of this trait item (0-based).
+     */
+    string getMethodName(int index) { trait_item_method_names(this, index, result) }
+
+    /**
+     * Gets the `index`th method type of this trait item (0-based).
+     */
+    FunctionType getMethodType(int index) { trait_item_method_types(this, index, result) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
+  class TraitTypeBound extends @trait_type_bound, TypeBoundType {
+    override string toString() { result = "TraitTypeBound" }
+
+    /**
+     * Gets the `index`th path of this trait type bound (0-based).
+     */
+    string getPath(int index) { trait_type_bound_paths(this, index, result) }
   }
 
   /**
