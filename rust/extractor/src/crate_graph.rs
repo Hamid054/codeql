@@ -112,7 +112,6 @@ pub fn extract_crate_graph(trap_provider: &trap::TrapFileProvider, db: &RootData
             let items = &module.scope;
             let mut values = Vec::new();
             let mut types = Vec::new();
-
             for (name, item) in items.entries() {
                 let def = item.with_visibility(ra_ap_hir::Visibility::Public);
                 if let Some((value, _, _import)) = def.values {
@@ -280,12 +279,43 @@ pub fn extract_crate_graph(trap_provider: &trap::TrapFileProvider, db: &RootData
                     }
                 }
             }
+            let impls: Vec<_> = items
+                .impls()
+                .map(|imp| {
+                    let imp = db.impl_data(imp);
+                    let self_ty = emit_hir_typeref(trap, &imp.self_ty);
+                    let target_trait = match imp.target_trait.as_ref() {
+                        Some(t) => emit_hir_path(&t.path),
+                        None => vec![],
+                    };
+                    let mut method_names = Vec::new();
+                    let mut method_types = Vec::new();
+                    for item in &imp.items {
+                        if let AssocItemId::FunctionId(function) = item {
+                            let function = db.function_data(*function);
+                            let method_type = emit_hir_fn_data(trap, &function);
+                            method_names.push(function.name.as_str().to_owned());
+                            method_types.push(method_type);
+                        };
+                    }
+
+                    trap.emit(generated::ImplItem {
+                        id: trap::TrapId::Star,
+                        target_trait,
+                        self_ty,
+                        method_names,
+                        method_types,
+                    })
+                })
+                .collect();
+
             let label = trap.emit(generated::CrateModule {
                 id: trap::TrapId::Star,
                 name: name.to_owned(),
                 parent,
                 values,
                 types,
+                impls,
             });
             for (name, child) in module
                 .children
