@@ -84,6 +84,7 @@ import codeql.rust.elements.GenericParamList
 import codeql.rust.elements.IdentPat
 import codeql.rust.elements.IfExpr
 import codeql.rust.elements.Impl
+import codeql.rust.elements.ImplItem
 import codeql.rust.elements.ImplTraitType
 import codeql.rust.elements.ImplTraitTypeRepr
 import codeql.rust.elements.IndexExpr

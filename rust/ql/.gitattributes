@@ -81,6 +81,7 @@
 /lib/codeql/rust/elements/IdentPat.qll linguist-generated
 /lib/codeql/rust/elements/IfExpr.qll linguist-generated
 /lib/codeql/rust/elements/Impl.qll linguist-generated
+/lib/codeql/rust/elements/ImplItem.qll linguist-generated
 /lib/codeql/rust/elements/ImplTraitType.qll linguist-generated
 /lib/codeql/rust/elements/ImplTraitTypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/IndexExpr.qll linguist-generated
@@ -335,6 +336,8 @@
 /lib/codeql/rust/elements/internal/IdentPatConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/IfExprConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/ImplConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/ImplItemConstructor.qll linguist-generated
+/lib/codeql/rust/elements/internal/ImplItemImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/ImplTraitTypeConstructor.qll linguist-generated
 /lib/codeql/rust/elements/internal/ImplTraitTypeImpl.qll linguist-generated
 /lib/codeql/rust/elements/internal/ImplTraitTypeReprConstructor.qll linguist-generated
@@ -622,6 +625,7 @@
 /lib/codeql/rust/elements/internal/generated/IdentPat.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/IfExpr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/Impl.qll linguist-generated
+/lib/codeql/rust/elements/internal/generated/ImplItem.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/ImplTraitType.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/ImplTraitTypeRepr.qll linguist-generated
 /lib/codeql/rust/elements/internal/generated/IndexExpr.qll linguist-generated
@@ -964,6 +968,7 @@
 /test/extractor-tests/generated/Impl/Impl_getTrait.ql linguist-generated
 /test/extractor-tests/generated/Impl/Impl_getVisibility.ql linguist-generated
 /test/extractor-tests/generated/Impl/Impl_getWhereClause.ql linguist-generated
+/test/extractor-tests/generated/ImplItem/MISSING_SOURCE.txt linguist-generated
 /test/extractor-tests/generated/ImplTraitType/MISSING_SOURCE.txt linguist-generated
 /test/extractor-tests/generated/ImplTraitTypeRepr/ImplTraitTypeRepr.ql linguist-generated
 /test/extractor-tests/generated/ImplTraitTypeRepr/ImplTraitTypeRepr_getTypeBoundList.ql linguist-generated

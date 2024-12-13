@@ -297,6 +297,10 @@ module Synth {
     /**
      * INTERNAL: Do not use.
      */
+    TImplItem(Raw::ImplItem id) { constructImplItem(id) } or
+    /**
+     * INTERNAL: Do not use.
+     */
     TImplTraitType(Raw::ImplTraitType id) { constructImplTraitType(id) } or
     /**
      * INTERNAL: Do not use.
@@ -1367,6 +1371,12 @@ module Synth {
 
   /**
    * INTERNAL: Do not use.
+   * Converts a raw element to a synthesized `TImplItem`, if possible.
+   */
+  TImplItem convertImplItemFromRaw(Raw::Element e) { result = TImplItem(e) }
+
+  /**
+   * INTERNAL: Do not use.
    * Converts a raw element to a synthesized `TImplTraitType`, if possible.
    */
   TImplTraitType convertImplTraitTypeFromRaw(Raw::Element e) { result = TImplTraitType(e) }
@@ -2310,6 +2320,8 @@ module Synth {
     or
     result = convertExtractorStepFromRaw(e)
     or
+    result = convertImplItemFromRaw(e)
+    or
     result = convertLocatableFromRaw(e)
     or
     result = convertModuleContainerFromRaw(e)
@@ -3154,6 +3166,12 @@ module Synth {
    * Converts a synthesized `TImpl` to a raw DB element, if possible.
    */
   Raw::Element convertImplToRaw(TImpl e) { e = TImpl(result) }
+
+  /**
+   * INTERNAL: Do not use.
+   * Converts a synthesized `TImplItem` to a raw DB element, if possible.
+   */
+  Raw::Element convertImplItemToRaw(TImplItem e) { e = TImplItem(result) }
 
   /**
    * INTERNAL: Do not use.
@@ -4099,6 +4117,8 @@ module Synth {
     result = convertEnumVariantToRaw(e)
     or
     result = convertExtractorStepToRaw(e)
+    or
+    result = convertImplItemToRaw(e)
     or
     result = convertLocatableToRaw(e)
     or

@@ -122,6 +122,7 @@ locatable_locations(
 @element =
   @enum_variant
 | @extractor_step
+| @impl_item
 | @locatable
 | @module_container
 | @type
@@ -148,6 +149,32 @@ extractor_steps(
   string action: string ref,
   int file: @file ref,
   int duration_ms: int ref
+);
+
+impl_items(
+  unique int id: @impl_item,
+  int self_ty: @type ref
+);
+
+#keyset[id, index]
+impl_item_target_traits(
+  int id: @impl_item ref,
+  int index: int ref,
+  string target_trait: string ref
+);
+
+#keyset[id, index]
+impl_item_method_names(
+  int id: @impl_item ref,
+  int index: int ref,
+  string method_name: string ref
+);
+
+#keyset[id, index]
+impl_item_method_types(
+  int id: @impl_item ref,
+  int index: int ref,
+  int method_type: @function_type ref
 );
 
 @locatable =
@@ -341,6 +368,13 @@ crate_module_types(
   int id: @crate_module ref,
   int index: int ref,
   int type_: @type_item ref
+);
+
+#keyset[id, index]
+crate_module_impls(
+  int id: @crate_module ref,
+  int index: int ref,
+  int impl: @impl_item ref
 );
 
 dyn_trait_types(

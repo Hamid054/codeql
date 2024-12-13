@@ -71,6 +71,7 @@ import codeql.rust.elements.internal.GenericParamListConstructor
 import codeql.rust.elements.internal.IdentPatConstructor
 import codeql.rust.elements.internal.IfExprConstructor
 import codeql.rust.elements.internal.ImplConstructor
+import codeql.rust.elements.internal.ImplItemConstructor
 import codeql.rust.elements.internal.ImplTraitTypeConstructor
 import codeql.rust.elements.internal.ImplTraitTypeReprConstructor
 import codeql.rust.elements.internal.IndexExprConstructor

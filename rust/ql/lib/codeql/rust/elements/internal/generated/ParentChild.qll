@@ -42,6 +42,19 @@ private module Impl {
     )
   }
 
+  private Element getImmediateChildOfImplItem(ImplItem e, int index, string partialPredicateCall) {
+    exists(int b, int bElement, int n |
+      b = 0 and
+      bElement = b + 1 + max(int i | i = -1 or exists(getImmediateChildOfElement(e, i, _)) | i) and
+      n = bElement and
+      (
+        none()
+        or
+        result = getImmediateChildOfElement(e, index - b, partialPredicateCall)
+      )
+    )
+  }
+
   private Element getImmediateChildOfLocatable(Locatable e, int index, string partialPredicateCall) {
     exists(int b, int bElement, int n |
       b = 0 and
@@ -4416,6 +4429,8 @@ private module Impl {
     result = getImmediateChildOfEnumVariant(e, index, partialAccessor)
     or
     result = getImmediateChildOfExtractorStep(e, index, partialAccessor)
+    or
+    result = getImmediateChildOfImplItem(e, index, partialAccessor)
     or
     result = getImmediateChildOfValueItem(e, index, partialAccessor)
     or

@@ -233,11 +233,19 @@ class ValueItem(Element):
     type: Type
 
 
+class ImplItem(Element):
+    target_trait: list[string]
+    self_ty: Type
+    method_names: list[string]
+    method_types: list[FunctionType]
+
+
 class CrateModule(ModuleContainer):
     parent: ModuleContainer
     name: string
     values: list[ValueItem]
     types: list[TypeItem]
+    impls: list[ImplItem]
 
 
 class Crate(ModuleContainer):

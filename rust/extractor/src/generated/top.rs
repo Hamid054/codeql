@@ -87,6 +87,47 @@ impl From<trap::Label<ExtractorStep>> for trap::Label<Element> {
 }
 
 #[derive(Debug)]
+pub struct ImplItem {
+    pub id: trap::TrapId<ImplItem>,
+    pub target_trait: Vec<String>,
+    pub self_ty: trap::Label<Type>,
+    pub method_names: Vec<String>,
+    pub method_types: Vec<trap::Label<FunctionType>>,
+}
+
+impl trap::TrapEntry for ImplItem {
+    fn extract_id(&mut self) -> trap::TrapId<Self> {
+        std::mem::replace(&mut self.id, trap::TrapId::Star)
+    }
+
+    fn emit(self, id: trap::Label<Self>, out: &mut trap::Writer) {
+        out.add_tuple("impl_items", vec![id.into(), self.self_ty.into()]);
+        for (i, v) in self.target_trait.into_iter().enumerate() {
+            out.add_tuple("impl_item_target_traits", vec![id.into(), i.into(), v.into()]);
+        }
+        for (i, v) in self.method_names.into_iter().enumerate() {
+            out.add_tuple("impl_item_method_names", vec![id.into(), i.into(), v.into()]);
+        }
+        for (i, v) in self.method_types.into_iter().enumerate() {
+            out.add_tuple("impl_item_method_types", vec![id.into(), i.into(), v.into()]);
+        }
+    }
+}
+
+impl trap::TrapClass for ImplItem {
+    fn class_name() -> &'static str { "ImplItem" }
+}
+
+impl From<trap::Label<ImplItem>> for trap::Label<Element> {
+    fn from(value: trap::Label<ImplItem>) -> Self {
+        // SAFETY: this is safe because in the dbscheme ImplItem is a subclass of Element
+        unsafe {
+            Self::from_untyped(value.as_untyped())
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct Locatable {
     _unused: ()
 }
@@ -389,6 +430,7 @@ pub struct CrateModule {
     pub name: String,
     pub values: Vec<trap::Label<ValueItem>>,
     pub types: Vec<trap::Label<TypeItem>>,
+    pub impls: Vec<trap::Label<ImplItem>>,
 }
 
 impl trap::TrapEntry for CrateModule {
@@ -403,6 +445,9 @@ impl trap::TrapEntry for CrateModule {
         }
         for (i, v) in self.types.into_iter().enumerate() {
             out.add_tuple("crate_module_types", vec![id.into(), i.into(), v.into()]);
+        }
+        for (i, v) in self.impls.into_iter().enumerate() {
+            out.add_tuple("crate_module_impls", vec![id.into(), i.into(), v.into()]);
         }
     }
 }

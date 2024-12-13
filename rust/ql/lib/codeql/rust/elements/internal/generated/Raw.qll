@@ -54,6 +54,33 @@ module Raw {
   /**
    * INTERNAL: Do not use.
    */
+  class ImplItem extends @impl_item, Element {
+    override string toString() { result = "ImplItem" }
+
+    /**
+     * Gets the `index`th target trait of this impl item (0-based).
+     */
+    string getTargetTrait(int index) { impl_item_target_traits(this, index, result) }
+
+    /**
+     * Gets the self ty of this impl item.
+     */
+    Type getSelfTy() { impl_items(this, result) }
+
+    /**
+     * Gets the `index`th method name of this impl item (0-based).
+     */
+    string getMethodName(int index) { impl_item_method_names(this, index, result) }
+
+    /**
+     * Gets the `index`th method type of this impl item (0-based).
+     */
+    FunctionType getMethodType(int index) { impl_item_method_types(this, index, result) }
+  }
+
+  /**
+   * INTERNAL: Do not use.
+   */
   class Locatable extends @locatable, Element { }
 
   /**
@@ -193,6 +220,11 @@ module Raw {
      * Gets the `index`th type of this crate module (0-based).
      */
     TypeItem getType(int index) { crate_module_types(this, index, result) }
+
+    /**
+     * Gets the `index`th impl of this crate module (0-based).
+     */
+    ImplItem getImpl(int index) { crate_module_impls(this, index, result) }
   }
 
   /**
