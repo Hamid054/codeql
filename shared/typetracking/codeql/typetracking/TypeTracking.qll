@@ -2,6 +2,8 @@
  * Provides classes and predicates for simple data-flow reachability suitable
  * for tracking types.
  */
+overlay[local]
+module;
 
 /**
  * The step relations for type tracking.
