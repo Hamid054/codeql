@@ -1,5 +1,7 @@
 use ra_ap_base_db::SourceDatabase;
 use ra_ap_hir::db::DefDatabase;
+use ra_ap_hir_def::type_ref::TypeRefId;
+use ra_ap_hir_def::type_ref::TypesMap;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::{cmp::Ordering, collections::HashMap, path::PathBuf};
@@ -127,7 +129,7 @@ pub fn extract_crate_graph(trap_provider: &trap::TrapFileProvider, db: &RootData
                         }
                         ModuleDefId::ConstId(konst) => {
                             let konst = db.const_data(konst);
-                            let type_ = emit_hir_typeref(trap, &konst.type_ref);
+                            let type_ = emit_hir_typeref_(trap, &konst.types_map, &konst.type_ref);
                             values.push(trap.emit(generated::ValueItem {
                                 id: trap::TrapId::Star,
                                 name: name.as_str().to_owned(),
@@ -136,7 +138,8 @@ pub fn extract_crate_graph(trap_provider: &trap::TrapFileProvider, db: &RootData
                         }
                         ModuleDefId::StaticId(statik) => {
                             let statik = db.static_data(statik);
-                            let type_ = emit_hir_typeref(trap, &statik.type_ref);
+                            let type_ =
+                                emit_hir_typeref_(trap, &statik.types_map, &statik.type_ref);
                             values.push(trap.emit(generated::ValueItem {
                                 id: trap::TrapId::Star,
                                 name: name.as_str().to_owned(),
@@ -164,25 +167,23 @@ pub fn extract_crate_graph(trap_provider: &trap::TrapFileProvider, db: &RootData
                             let variant_data = db.enum_variant_data(variant_id);
                             let type_ = match variant_data.variant_data.as_ref() {
                                 ra_ap_hir_def::data::adt::VariantData::Unit => {
-                                    Some(emit_hir_typeref(trap, &ret_type))
+                                    Some(emit_hir_typeref(trap, TypesMap::EMPTY, &ret_type))
                                 }
-                                ra_ap_hir_def::data::adt::VariantData::Tuple(arena) => {
+                                ra_ap_hir_def::data::adt::VariantData::Tuple {
+                                    fields,
+                                    types_map,
+                                } => {
                                     let params: Vec<_> =
-                                        arena.values().map(|f| f.type_ref.as_ref()).collect();
+                                        fields.values().map(|f| &types_map[f.type_ref]).collect();
                                     Some(
                                         emit_hir_fn(
-                                            trap,
-                                            None,
-                                            &params[..],
-                                            &ret_type,
-                                            false,
-                                            false,
-                                            false,
+                                            trap, types_map, None, &params, &ret_type, false,
+                                            false, false,
                                         )
                                         .into(),
                                     )
                                 }
-                                ra_ap_hir_def::data::adt::VariantData::Record(_) => {
+                                ra_ap_hir_def::data::adt::VariantData::Record { .. } => {
                                     // record enums are not "values"
                                     None
                                 }
@@ -283,9 +284,9 @@ pub fn extract_crate_graph(trap_provider: &trap::TrapFileProvider, db: &RootData
                 .impls()
                 .map(|imp| {
                     let imp = db.impl_data(imp);
-                    let self_ty = emit_hir_typeref(trap, &imp.self_ty);
+                    let self_ty = emit_hir_typeref_(trap, &imp.types_map, &imp.self_ty);
                     let target_trait = match imp.target_trait.as_ref() {
-                        Some(t) => emit_hir_path(&t.path),
+                        Some(t) => emit_hir_path(&imp.types_map[t.path]),
                         None => vec![],
                     };
                     let mut method_names = Vec::new();
@@ -330,20 +331,21 @@ pub fn extract_crate_graph(trap_provider: &trap::TrapFileProvider, db: &RootData
 
 fn emit_hir_type_bound(
     trap: &mut TrapFile,
+    types_map: &TypesMap,
     type_bound: &ra_ap_hir_def::type_ref::TypeBound,
 ) -> Option<trap::Label<generated::TypeBoundType>> {
     match type_bound {
         ra_ap_hir_def::type_ref::TypeBound::Path(path, _) => Some(
             trap.emit(generated::TraitTypeBound {
                 id: trap::TrapId::Star,
-                path: emit_hir_path(path),
+                path: emit_hir_path(&types_map[*path]),
             })
             .into(),
         ),
         ra_ap_hir_def::type_ref::TypeBound::ForLifetime(names, path) => Some(
             trap.emit(generated::ForLifetimeTypeBound {
                 id: trap::TrapId::Star,
-                path: emit_hir_path(path),
+                path: emit_hir_path(&types_map[*path]),
                 names: names.into_iter().map(|x| x.as_str().to_owned()).collect(),
             })
             .into(),
@@ -355,6 +357,7 @@ fn emit_hir_type_bound(
             })
             .into(),
         ),
+        ra_ap_hir_def::type_ref::TypeBound::Use(_) => None, //TODO
         ra_ap_hir_def::type_ref::TypeBound::Error => None,
     }
 }
@@ -366,6 +369,7 @@ fn emit_hir_path(path: &ra_ap_hir_def::path::Path) -> Vec<String> {
 }
 fn emit_hir_fn(
     trap: &mut TrapFile,
+    types_map: &TypesMap,
     self_type: Option<&TypeRef>,
     params: &[&TypeRef],
     ret_type: &TypeRef,
@@ -373,10 +377,13 @@ fn emit_hir_fn(
     is_const: bool,
     is_unsafe: bool,
 ) -> trap::Label<generated::FunctionType> {
-    let ret_type = emit_hir_typeref(trap, ret_type);
+    let ret_type = emit_hir_typeref(trap, types_map, ret_type);
 
-    let self_type = self_type.map(|ty| emit_hir_typeref(trap, ty));
-    let params = params.iter().map(|t| emit_hir_typeref(trap, t)).collect();
+    let self_type = self_type.map(|ty| emit_hir_typeref(trap, types_map, ty));
+    let params = params
+        .iter()
+        .map(|t| emit_hir_typeref(trap, types_map, t))
+        .collect();
 
     trap.emit(generated::FunctionType {
         id: trap::TrapId::Star,
@@ -393,24 +400,40 @@ fn emit_hir_fn_data(
     trap: &mut TrapFile,
     function: &FunctionData,
 ) -> trap::Label<generated::FunctionType> {
-    let params: Vec<_> = function.params.iter().map(|x| x.as_ref()).collect();
+    let params = &function.params;
     let (self_type, params) = if function.has_self_param() {
         (Some(params[0]), &params[1..])
     } else {
         (None, &params[..])
     };
-    let ret_type = function.ret_type.as_ref();
+    let self_type = self_type.map(|x| &function.types_map[x]);
+    let params: Vec<_> = params.iter().map(|x| &function.types_map[*x]).collect();
+    let ret_type = &function.types_map[function.ret_type];
     emit_hir_fn(
         trap,
+        &function.types_map,
         self_type,
-        params,
+        &params,
         ret_type,
         function.is_async(),
         function.is_const(),
         function.is_unsafe(),
     )
 }
-fn emit_hir_typeref(trap: &mut TrapFile, ty: &TypeRef) -> trap::Label<generated::Type> {
+
+fn emit_hir_typeref_(
+    trap: &mut TrapFile,
+    types_map: &TypesMap,
+    ty: &TypeRefId,
+) -> trap::Label<generated::Type> {
+    emit_hir_typeref(trap, types_map, &types_map[*ty])
+}
+
+fn emit_hir_typeref(
+    trap: &mut TrapFile,
+    types_map: &TypesMap,
+    ty: &TypeRef,
+) -> trap::Label<generated::Type> {
     match ty {
         TypeRef::Never => trap
             .emit(generated::NeverType {
@@ -427,7 +450,7 @@ fn emit_hir_typeref(trap: &mut TrapFile, ty: &TypeRef) -> trap::Label<generated:
         TypeRef::Tuple(fields) => {
             let fields = fields
                 .iter()
-                .map(|field| emit_hir_typeref(trap, field))
+                .map(|field| emit_hir_typeref_(trap, types_map, field))
                 .collect();
 
             trap.emit(generated::TupleType {
@@ -437,7 +460,7 @@ fn emit_hir_typeref(trap: &mut TrapFile, ty: &TypeRef) -> trap::Label<generated:
             .into()
         }
         TypeRef::RawPtr(type_ref, mutability) => {
-            let type_ = emit_hir_typeref(trap, type_ref);
+            let type_ = emit_hir_typeref_(trap, types_map, type_ref);
 
             trap.emit(generated::RawPtrType {
                 id: trap::TrapId::Star,
@@ -446,19 +469,22 @@ fn emit_hir_typeref(trap: &mut TrapFile, ty: &TypeRef) -> trap::Label<generated:
             })
             .into()
         }
-        TypeRef::Reference(type_ref, lifetime_ref, mutability) => {
-            let type_ = emit_hir_typeref(trap, type_ref);
-            let lifetime = lifetime_ref.as_ref().map(|x| x.name.as_str().to_owned());
+        TypeRef::Reference(ref_type) => {
+            let type_ = emit_hir_typeref_(trap, types_map, &ref_type.ty);
+            let lifetime = ref_type
+                .lifetime
+                .as_ref()
+                .map(|x| x.name.as_str().to_owned());
             trap.emit(generated::ReferenceType {
                 id: trap::TrapId::Star,
-                is_mut: mutability.is_mut(),
+                is_mut: ref_type.mutability.is_mut(),
                 type_,
                 lifetime,
             })
             .into()
         }
-        TypeRef::Array(type_ref, _const_ref) => {
-            let type_ = emit_hir_typeref(trap, type_ref);
+        TypeRef::Array(array_type) => {
+            let type_ = emit_hir_typeref_(trap, types_map, &array_type.ty);
             // TODO: handle array size constant
             trap.emit(generated::ArrayType {
                 id: trap::TrapId::Star,
@@ -467,24 +493,25 @@ fn emit_hir_typeref(trap: &mut TrapFile, ty: &TypeRef) -> trap::Label<generated:
             .into()
         }
         TypeRef::Slice(type_ref) => {
-            let type_ = emit_hir_typeref(trap, type_ref);
+            let type_ = emit_hir_typeref_(trap, types_map, type_ref);
             trap.emit(generated::SliceType {
                 id: trap::TrapId::Star,
                 type_,
             })
             .into()
         }
-        TypeRef::Fn(params, _, is_unsafe, _symbol) => {
-            let (ret_type, params) = params.split_last().unwrap();
-            let params: Vec<_> = params.as_ref().iter().map(|x| &x.1).collect();
+        TypeRef::Fn(fn_type) => {
+            let (ret_type, params) = fn_type.params().split_last().unwrap();
+            let params: Vec<_> = params.as_ref().iter().map(|x| &types_map[x.1]).collect();
             emit_hir_fn(
                 trap,
+                types_map,
                 None,
-                &params[..],
-                &ret_type.1,
+                &params,
+                &types_map[ret_type.1],
                 false,
                 false,
-                *is_unsafe,
+                fn_type.is_unsafe(),
             )
             .into()
         }
@@ -499,7 +526,7 @@ fn emit_hir_typeref(trap: &mut TrapFile, ty: &TypeRef) -> trap::Label<generated:
         TypeRef::ImplTrait(type_bounds) => {
             let type_bounds = type_bounds
                 .iter()
-                .flat_map(|t| emit_hir_type_bound(trap, t))
+                .flat_map(|t| emit_hir_type_bound(trap, types_map, t))
                 .collect();
             trap.emit(generated::ImplTraitType {
                 id: trap::TrapId::Star,
@@ -510,7 +537,7 @@ fn emit_hir_typeref(trap: &mut TrapFile, ty: &TypeRef) -> trap::Label<generated:
         TypeRef::DynTrait(type_bounds) => {
             let type_bounds = type_bounds
                 .iter()
-                .flat_map(|t| emit_hir_type_bound(trap, t))
+                .flat_map(|t| emit_hir_type_bound(trap, types_map, t))
                 .collect();
             trap.emit(generated::DynTraitType {
                 id: trap::TrapId::Star,
@@ -531,11 +558,18 @@ fn emit_variant_data(
     variant: &VariantData,
 ) -> Option<trap::Label<generated::VariantData>> {
     match variant {
-        VariantData::Record(field_data) | VariantData::Tuple(field_data) => {
+        VariantData::Record {
+            fields: field_data,
+            types_map,
+        }
+        | VariantData::Tuple {
+            fields: field_data,
+            types_map,
+        } => {
             let mut types = Vec::new();
             let mut fields = Vec::new();
             for field in field_data.values() {
-                let tp = emit_hir_typeref(trap, &field.type_ref);
+                let tp = emit_hir_typeref_(trap, types_map, &field.type_ref);
                 fields.push(field.name.as_str().to_owned());
                 types.push(tp);
             }
@@ -543,7 +577,7 @@ fn emit_variant_data(
                 id: trap::TrapId::Star,
                 types,
                 fields,
-                is_record: matches!(variant, VariantData::Record(_)),
+                is_record: matches!(variant, VariantData::Record { .. }),
             }))
         }
         VariantData::Unit => None,
